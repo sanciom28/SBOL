@@ -18,9 +18,6 @@ struct ContentView: View {
 
             Text("Hello, world!")
                 .padding(.bottom, 30)
-            
-            Text("Probando git")
-                .padding(.bottom, 30)
 
             ToggleImmersiveSpaceButton()
             
