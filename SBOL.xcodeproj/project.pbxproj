@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B845D7C2C9A5557001C640E /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B845D7B2C9A5557001C640E /* RealityKit.framework */; };
 		7B869B992C83FEFC007BE0C3 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 7B869B982C83FEFC007BE0C3 /* RealityKitContent */; };
 /* End PBXBuildFile section */
 
@@ -21,6 +22,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7B845D7B2C9A5557001C640E /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 		7B869B932C83FEFC007BE0C3 /* SBOL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SBOL.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B869B972C83FEFC007BE0C3 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		7B869BAE2C83FEFE007BE0C3 /* SBOLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SBOLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,7 +39,10 @@
 		7BBFC5582C949E350002EBCB /* Exceptions for "SBOL" folder in "SBOLTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				bratainer.json,
+				BoxesRender.swift,
+				BoxModel.swift,
+				BoxViewModel.swift,
+				SingleBox.json,
 			);
 			target = 7B869BAD2C83FEFE007BE0C3 /* SBOLTests */;
 		};
@@ -65,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B845D7C2C9A5557001C640E /* RealityKit.framework in Frameworks */,
 				7B869B992C83FEFC007BE0C3 /* RealityKitContent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,12 +85,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B845D7A2C9A5557001C640E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7B845D7B2C9A5557001C640E /* RealityKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7B869B8A2C83FEFC007BE0C3 = {
 			isa = PBXGroup;
 			children = (
 				7B869B952C83FEFC007BE0C3 /* SBOL */,
 				7B869B962C83FEFC007BE0C3 /* Packages */,
 				7B869BB12C83FEFE007BE0C3 /* SBOLTests */,
+				7B845D7A2C9A5557001C640E /* Frameworks */,
 				7B869B942C83FEFC007BE0C3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -339,6 +354,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -396,6 +412,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
