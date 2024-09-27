@@ -31,13 +31,21 @@ struct ContentView: View {
                     
                     // Create a semitransparent volume (container)
                     let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
-                    let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.3), isMetallic: false)
+                    let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.8), isMetallic: false)
                     let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
                     
                     print("Creating container with dimensions: \(containerLength)m x \(containerHeight)m x \(containerWidth)m")
                     
                     // Center the container in the scene
                     containerEntity.position = [0, containerHeight / 2, 0]
+                    
+                    // testing container positions
+                    //containerEntity.position = [0,containerHeight/2,-0.4]
+                    
+                    // Rotate the container 45 degrees around the Y-axis
+                    let angle = Float(45 * 3.14159 / 180)  // Convert degrees to radians
+                    containerEntity.orientation = simd_quatf(angle: angle, axis: [0, 1, 0])  // Rotation around Y-axis
+
                     content.add(containerEntity)
                     
                     // Extract the "locations" string and split by \r (which separates each box)
@@ -49,9 +57,9 @@ struct ContentView: View {
                             
                             // Extract the relevant values from the locations string
                             if values.count >= 11 {
-                                let boxLength = (Float(values[3]) ?? 0.0) / 1000  // in meters
-                                let boxWidth = (Float(values[4]) ?? 0.0) / 1000   // in meters
-                                let boxHeight = (Float(values[5]) ?? 0.0) / 1000  // in meters
+                                let boxLength = (Float(values[3]) ?? 0.0) / 10000  // in meters
+                                let boxWidth = (Float(values[4]) ?? 0.0) / 10000   // in meters
+                                let boxHeight = (Float(values[5]) ?? 0.0) / 10000  // in meters
                                 let boxColor = hexStringToColor(hex: values[6])
                                 let boxX = (Float(values[8]) ?? 0.0) / 1000       // in meters
                                 let boxY = (Float(values[9]) ?? 0.0) / 1000       // in meters
