@@ -9,6 +9,11 @@ import SwiftUI
 import RealityKit
 
 struct ContentView: View {
+    
+    // State variables to store the container's position and rotation
+    @State private var containerPosition: SIMD3<Float> = [0, 0, 0]  // Initially on the floor, 2 meters away from the camera
+    @State private var containerRotation: Float = 0.0  // Initially no rotation around the Y-axis
+        
     var body: some View {
         RealityView { content in
             // Load and parse the JSON data from the bundle
@@ -37,16 +42,25 @@ struct ContentView: View {
                     print("Creating container with dimensions: \(containerLength)m x \(containerHeight)m x \(containerWidth)m")
                     
                     // Center the container in the scene
-                    containerEntity.position = [0, containerHeight / 2, 0]
+                    //containerEntity.position = [0, containerHeight / 2, 0]
                     
                     // testing container positions
                     //containerEntity.position = [0,containerHeight/2,-0.4]
                     
                     // Rotate the container 45 degrees around the Y-axis
-                    let angle = Float(45 * 3.14159 / 180)  // Convert degrees to radians
-                    containerEntity.orientation = simd_quatf(angle: angle, axis: [0, 1, 0])  // Rotation around Y-axis
+                    //let angle = Float(45 * 3.14159 / 180)  // Convert degrees to radians
+                    //containerEntity.orientation = simd_quatf(angle: angle, axis: [0, 1, 0])  // Rotation around Y-axis
 
+                    // Set the container's position and rotation
+                    containerEntity.position = containerPosition
+                    containerEntity.orientation = simd_quatf(angle: containerRotation, axis: [0, 1, 0])  // Rotate around Y-axis
+                                
+                    
                     content.add(containerEntity)
+                    
+                    
+                    
+                    
                     
                     // Extract the "locations" string and split by \r (which separates each box)
                     if let locations = container["locations"] as? String {
@@ -61,14 +75,16 @@ struct ContentView: View {
                                 let boxWidth = (Float(values[4]) ?? 0.0) / 10000   // in meters
                                 let boxHeight = (Float(values[5]) ?? 0.0) / 10000  // in meters
                                 let boxColor = hexStringToColor(hex: values[6])
-                                let boxX = (Float(values[8]) ?? 0.0) / 1000       // in meters
-                                let boxY = (Float(values[9]) ?? 0.0) / 1000       // in meters
-                                let boxZ = (Float(values[10]) ?? 0.0) / 1000      // in meters
+                                let boxX = (Float(values[8]) ?? 0.0) / 10000       // in meters
+                                let boxY = (Float(values[9]) ?? 0.0) / 10000       // in meters
+                                let boxZ = (Float(values[10]) ?? 0.0) / 10000      // in meters
                                 
                                 // Create the box entity
                                 let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
                                 let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: true)
                                 let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
+                                
+                                print("Creating box 📦 with dimensions: \(containerLength)m x \(containerHeight)m x \(containerWidth)m")
                                 
                                 // Position the box inside the container
                                 boxEntity.position = SIMD3<Float>(Float(boxX), Float(boxY), Float(boxZ))
@@ -86,6 +102,24 @@ struct ContentView: View {
                 print("Error loading the JSON file: \(error)")
             }
         }
+        // Add gestures for moving and rotating the container
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    // Update the position based on the drag (X and Z axes)
+                    let deltaX = Float(value.translation.width) * 0.01  // Scale down the translation to meters
+                    let deltaZ = Float(value.translation.height) * 0.01
+                    containerPosition.x += deltaX
+                    containerPosition.z += deltaZ
+                }
+        )
+        .gesture(
+            RotationGesture()
+                .onChanged { value in
+                    // Update the rotation around the Y-axis based on the user's rotation gesture
+                    containerRotation = Float(value.radians)
+                }
+        )
     }
     
     // Helper function to convert hex color code to UIColor
@@ -109,4 +143,5 @@ struct ContentView: View {
         
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
+
 }
