@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var showDocumentPicker = false
     @State private var jsonData: Data? = nil
 
+    
     var body: some View {
         VStack {
             if jsonData == nil {
@@ -22,17 +23,34 @@ struct ContentView: View {
                     showDocumentPicker = true
                 }
             } else {
-                RealityView { content in
-                    loadAndRenderFromJSON(content: content)
+                ZStack {
+                    RealityView { content in
+                        loadAndRenderFromJSON(content: content)
+                    }
+                    // Gesture handlers...
+                    
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: resetView) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.red)
+                                    .padding()
+                            }
+                        }
+                    }
                 }
-                // Gesture handlers...
             }
         }
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
         }
         // Gesture handlers for moving and rotating...
+
     }
+
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent) {
         guard let jsonData = jsonData else { return }
@@ -91,6 +109,16 @@ struct ContentView: View {
             print("Error loading the JSON file: \(error)")
         }
     }
+    
+    // This function will clear the rendered content and reset the app to its initial state.
+    func resetView() {
+        // Reset JSON data to nil, which will remove rendered content
+        jsonData = nil
+        containerPosition = [0, 0, 0]
+        containerRotation = 0.0
+        // You can also reset any other states or variables if needed
+    }
+
     // Helper function to convert hex color code to UIColor
     func hexStringToColor(hex: String) -> UIColor {
         var cleanedHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
