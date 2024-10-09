@@ -60,12 +60,12 @@ struct ContentView: View {
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
                 
-                let containerLength = (container["container_length"] as? Float ?? 0.0) / 10000
-                let containerWidth = (container["container_width"] as? Float ?? 0.0) / 10000
-                let containerHeight = (container["container_height"] as? Float ?? 0.0) / 10000
+                let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
+                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
+                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
                 
                 let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
-                let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.8), isMetallic: false)
+                let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.7), isMetallic: false)
                 let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
                 
                 content.add(containerEntity)
@@ -88,19 +88,31 @@ struct ContentView: View {
                             let boxX = (Float(values[8]) ?? 0.0) / 10000       // in meters
                             let boxY = (Float(values[9]) ?? 0.0) / 10000       // in meters
                             let boxZ = (Float(values[10]) ?? 0.0) / 10000      // in meters
-                            
+                                                        
                             // Create the box entity
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
-                            let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: true)
+                            let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
                             let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
                             
-                            print("Creating box 📦 with dimensions: \(containerLength)m x \(containerHeight)m x \(containerWidth)m")
+                            print("Creating box 📦 with dimensions: \(boxLength)m x \(boxHeight)m x \(boxWidth)m")
                             
+                            // Adjust the boxes' starting position from the center to the corner
+                            let adjustedBoxPosition = SIMD3<Float>(
+                                    boxX - (containerLength / 2) + (boxLength / 2),
+                                    boxY - (containerHeight / 2) + (boxHeight / 2),
+                                    boxZ - (containerWidth / 2) + (boxWidth / 2)
+                                )
+
                             // Position the box inside the container
-                            boxEntity.position = SIMD3<Float>(Float(boxX), Float(boxY), Float(boxZ))
+                            // boxEntity.position = SIMD3<Float>(Float(boxX), Float(boxY), Float(boxZ))
+                            boxEntity.position = adjustedBoxPosition
+                            print(adjustedBoxPosition)
                             
                             // Add the box to the container
                             containerEntity.addChild(boxEntity)
+                            
+                            // figuring out the delta between the container and the boxes
+                            print("The boxes extend beyond the container in these values:\n\(boxX+boxLength-containerLength)\n\(boxY+boxHeight-containerHeight)\n\(boxZ+boxWidth-containerWidth)")
                         }
                     }
                 }
