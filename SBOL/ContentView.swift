@@ -10,48 +10,86 @@ import RealityKit
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    @State private var containerPosition: SIMD3<Float> = [0, -0.1, -0.1]
+    
+    @State private var containerPosition: SIMD3<Float> = [0, 0.016, 0]
     @State private var containerRotation: Float = 0.5
     @State private var showDocumentPicker = false
     @State private var jsonData: Data? = nil
+    @State private var containers: [[String: Any]] = []
+    @State private var currentContainerIndex: Int = 0
+    @State private var boxCount: Int = 0
 
-    
     var body: some View {
         VStack {
             if jsonData == nil {
+                Text("SBOL")
+                    .font(.system(size: 150))
+                    .fontDesign(.monospaced)
+                    .bold()
+                Text("Spatial Bill of Lading")
+                    .font(.system(size: 28))
+                    .italic()
+                    .padding(.bottom, 80)
                 Button("Load JSON") {
                     showDocumentPicker = true
                 }
+                    .frame(width: 220, height: 80)
+                    .font(.system(size: 24))
             } else {
-                ZStack {
-                    RealityView { content in
-                        loadAndRenderFromJSON(content: content)
-                    }
-                    // Gesture handlers...
-                    
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Button(action: resetView) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 30))
-                                    //.foregroundColor(.red)
-                                    .padding()
-                            }
+                VStack {
+                    // Display the current container number and box count
+                    Text("Container: \(currentContainerIndex + 1) / \(containers.count)")
+                        .font(.headline)
+                        .padding(.top)
+                    Text("Boxes in this container: \(boxCount)")
+                        .font(.subheadline)
+                        //.padding(.bottom)
+
+                    // Arrow buttons for navigation
+                    HStack {
+                        Button(action: showPreviousContainer) {
+                            Image(systemName: "arrow.left.circle.fill")
+                                .font(.system(size: 30))
                         }
+                        .disabled(currentContainerIndex == 0) // Disable if at the first container
+
+                        Spacer()
+
+                        Button(action: showNextContainer) {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .font(.system(size: 30))
+                        }
+                        .disabled(currentContainerIndex == containers.count - 1) // Disable if at the last container
+                    }
+                    .padding(.horizontal)
+
+                    // Re-add RealityView for rendering the container
+                    ZStack {
+                        RealityView { content in
+                            loadAndRenderFromJSON(content: content)  // Render the current container
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
+                
+                // Reset button in main window
+                Button(action: resetView) {
+                    Text("Reset")
+                        //.frame(height: 15)
+                        //.foregroundColor(.red)
+                        .padding()
+                        //.background(Color.black.opacity(0.1))
+                        .cornerRadius(10)
+                }
+                .padding()
             }
         }
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
         }
-        // Gesture handlers for moving and rotating...
 
     }
 
-    
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent) {
         guard let jsonData = jsonData else { return }
 
@@ -122,14 +160,81 @@ struct ContentView: View {
             print("Error loading the JSON file: \(error)")
         }
     }
-    
-    // This function will clear the rendered content and reset the app to its initial state.
+    // Load the JSON data and prepare containers
+    func loadJSONData() {
+        guard let jsonData = jsonData else { return }
+
+        do {
+            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+               let loadedContainers = jsonObject["containers"] as? [[String: Any]] {
+                containers = loadedContainers
+                currentContainerIndex = 0 // Start with the first container
+                loadAndRenderCurrentContainer(content: nil) // Load first container immediately
+            }
+        } catch {
+            print("Failed to parse JSON: \(error)")
+        }
+    }
+
+    // Render the currently selected container
+    func loadAndRenderCurrentContainer(content: RealityKit.RealityViewContent?) {
+        guard currentContainerIndex < containers.count else { return }
+
+        let container = containers[currentContainerIndex]
+        let containerLength = Float(container["container_length"] as? Double ?? 0) / 1000
+        let containerWidth = Float(container["container_width"] as? Double ?? 0) / 1000
+        let containerHeight = Float(container["container_height"] as? Double ?? 0) / 1000
+
+        let containerEntity = ModelEntity(mesh: MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth]))
+        containerEntity.position = containerPosition
+        containerEntity.transform.rotation = simd_quatf(angle: containerRotation, axis: [0, 1, 0])
+
+        content?.add(containerEntity)
+
+        if let locationsString = container["locations"] as? String {
+            let boxes = createBoxesFromLocations(locationsString)
+            boxCount = boxes.count
+            for box in boxes {
+                containerEntity.addChild(box)
+            }
+        }
+    }
+
+    // Reset view to ask for JSON again
     func resetView() {
-        // Reset JSON data to nil, which will remove rendered content
         jsonData = nil
-        //containerPosition = [0, -0.1, -0.12]
-        //containerRotation = 0.0
-        // You can also reset any other states or variables if needed
+        containers.removeAll()
+        currentContainerIndex = 0
+        boxCount = 0
+    }
+
+    // Create boxes from the locations string in JSON
+    func createBoxesFromLocations(_ locationsString: String) -> [Entity] {
+        var boxes: [Entity] = []
+        let boxInfoList = locationsString.split(separator: "\r")
+
+        for boxInfo in boxInfoList {
+            let boxEntity = ModelEntity(mesh: MeshResource.generateBox(size: [0.1, 0.1, 0.1]))  // Example size
+            boxes.append(boxEntity)
+        }
+
+        return boxes
+    }
+
+    // Show the previous container
+    func showPreviousContainer() {
+        if currentContainerIndex > 0 {
+            currentContainerIndex -= 1
+            loadAndRenderCurrentContainer(content: nil)
+        }
+    }
+
+    // Show the next container
+    func showNextContainer() {
+        if currentContainerIndex < containers.count - 1 {
+            currentContainerIndex += 1
+            loadAndRenderCurrentContainer(content: nil)
+        }
     }
 
     // Helper function to convert hex color code to UIColor
@@ -195,4 +300,8 @@ struct DocumentPickerView: UIViewControllerRepresentable {
         
     }
     
+}
+
+#Preview {
+    ContentView()
 }
