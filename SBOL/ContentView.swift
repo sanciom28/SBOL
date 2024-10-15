@@ -128,8 +128,8 @@ struct ContentView: View {
                             let boxHeight = (Float(values[5]) ?? 0.0) / 10000  // in meters
                             let boxColor = hexStringToColor(hex: values[6])
                             let boxX = (Float(values[8]) ?? 0.0) / 10000       // in meters
-                            let boxY = (Float(values[9]) ?? 0.0) / 10000       // in meters
-                            let boxZ = (Float(values[10]) ?? 0.0) / 10000      // in meters
+                            let boxY = (Float(values[10]) ?? 0.0) / 10000       // in meters
+                            let boxZ = (Float(values[9]) ?? 0.0) / 10000      // in meters
                                                         
                             // Create the box entity
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
