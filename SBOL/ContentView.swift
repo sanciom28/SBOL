@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var showDocumentPicker = false
     @State private var jsonData: Data? = nil
     @State private var containers: [[String: Any]] = []
+    @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
 
@@ -38,7 +39,7 @@ struct ContentView: View {
             } else {
                 VStack {
                     // Display the current container number and box count
-                    Text("Container: \(currentContainerIndex + 1) / \(containers.count)")
+                    Text("Container: \(currentContainerIndex + 1) / \(containerCount)")
                         .font(.headline)
                         .padding(.top)
                     Text("Boxes in this container: \(boxCount)")
@@ -98,6 +99,8 @@ struct ContentView: View {
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
                 
+                containerCount = containers.count
+                
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
@@ -119,6 +122,7 @@ struct ContentView: View {
                     let boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
                     
                     for boxDetail in boxDetails {
+                        boxCount += 1
                         let values = boxDetail.components(separatedBy: ",")
                         
                         // Extract the relevant values from the locations string
