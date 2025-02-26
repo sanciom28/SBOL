@@ -31,10 +31,15 @@ struct ContentView: View {
                     .font(.system(size: 28))
                     .italic()
                     .padding(.bottom, 80)
-                Button("Load JSON") {
+                Button("Load from API") {
+                    fetchJSONFromAPI()
+                }
+                    .frame(width: 360, height: 80)
+                    .font(.system(size: 24))
+                Button("Load from file") {
                     showDocumentPicker = true
                 }
-                    .frame(width: 220, height: 80)
+                    .frame(width: 360, height: 80)
                     .font(.system(size: 24))
             } else {
                 VStack {
@@ -89,6 +94,10 @@ struct ContentView: View {
             DocumentPickerView(jsonData: $jsonData)
         }
 
+    }
+    
+    func fetchJSONFromAPI() {
+        //
     }
 
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent) {
@@ -304,8 +313,4 @@ struct DocumentPickerView: UIViewControllerRepresentable {
         
     }
     
-}
-
-#Preview {
-    ContentView()
 }
