@@ -19,6 +19,9 @@ struct ContentView: View {
     @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
+    
+    @State private var containersAPI: [Container] = []
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack {
@@ -41,6 +44,11 @@ struct ContentView: View {
                 }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
+                if let error = errorMessage {
+                                Text(error)
+                                    .foregroundColor(.red)
+                                    .padding()
+                            }
             } else {
                 VStack {
                     // Display the current container number and box count
@@ -97,8 +105,63 @@ struct ContentView: View {
     }
     
     func fetchJSONFromAPI() {
-        //
+        let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
+        
+        // Create the JSON payload
+        let requestBody: [String: Any] = [
+            "qpm_calcdb": "qpm_calcdb",
+            "shipment": 3934465 // Change this dynamically later
+        ]
+        
+        // Convert the dictionary to JSON string and encode it
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
+              let jsonString = String(data: jsonData, encoding: .utf8)?
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            DispatchQueue.main.async {
+                errorMessage = "Failed to encode request JSON"
+            }
+            return
+        }
+        
+        let urlString = baseURL + jsonString
+        guard let url = URL(string: urlString) else {
+            DispatchQueue.main.async {
+                errorMessage = "Invalid API URL"
+            }
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization") //TODO: remove hardcoded credentials
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    errorMessage = "Request failed: \(error.localizedDescription)"
+                    return
+                }
+
+                guard let data = data else {
+                    errorMessage = "No data received"
+                    return
+                }
+                
+                //print(String(data: data, encoding: .utf8) ?? "No data")
+
+                do {
+                    let decodedData = try JSONDecoder().decode([Container].self, from: data)
+                    print(decodedData)
+                    containersAPI = decodedData
+                    errorMessage = nil // Clear error if successful
+                } catch {
+                    errorMessage = "JSON Parsing Error: \(error.localizedDescription)"
+                }
+            }
+        }.resume()
     }
+
+
 
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent) {
         guard let jsonData = jsonData else { return }
@@ -173,21 +236,21 @@ struct ContentView: View {
             print("Error loading the JSON file: \(error)")
         }
     }
-    // Load the JSON data and prepare containers
-    func loadJSONData() {
-        guard let jsonData = jsonData else { return }
-
-        do {
-            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-               let loadedContainers = jsonObject["containers"] as? [[String: Any]] {
-                containers = loadedContainers
-                currentContainerIndex = 0 // Start with the first container
-                loadAndRenderCurrentContainer(content: nil) // Load first container immediately
-            }
-        } catch {
-            print("Failed to parse JSON: \(error)")
-        }
-    }
+    //[DEPRECATED] Load the JSON data and prepare containers
+//    func loadJSONData() {
+//        guard let jsonData = jsonData else { return }
+//
+//        do {
+//            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+//               let loadedContainers = jsonObject["containers"] as? [[String: Any]] {
+//                containers = loadedContainers
+//                currentContainerIndex = 0 // Start with the first container
+//                loadAndRenderCurrentContainer(content: nil) // Load first container immediately
+//            }
+//        } catch {
+//            print("Failed to parse JSON: \(error)")
+//        }
+//    }
 
     // Render the currently selected container
     func loadAndRenderCurrentContainer(content: RealityKit.RealityViewContent?) {
