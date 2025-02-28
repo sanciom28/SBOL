@@ -106,34 +106,30 @@ struct ContentView: View {
     
     func fetchJSONFromAPI() {
         let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
-        
+
         // Create the JSON payload
         let requestBody: [String: Any] = [
             "qpm_calcdb": "qpm_calcdb",
             "shipment": 3934465 // Change this dynamically later
         ]
-        
-        // Convert the dictionary to JSON string and encode it
+
+        // Convert to JSON string and encode for URL
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
               let jsonString = String(data: jsonData, encoding: .utf8)?
                 .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            DispatchQueue.main.async {
-                errorMessage = "Failed to encode request JSON"
-            }
+            DispatchQueue.main.async { errorMessage = "Failed to encode request JSON" }
             return
         }
-        
+
         let urlString = baseURL + jsonString
         guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async {
-                errorMessage = "Invalid API URL"
-            }
+            DispatchQueue.main.async { errorMessage = "Invalid API URL" }
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization") //TODO: remove hardcoded credentials
+        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -146,24 +142,15 @@ struct ContentView: View {
                     errorMessage = "No data received"
                     return
                 }
-                
-                //print(String(data: data, encoding: .utf8) ?? "No data")
 
-                do {
-                    let decodedData = try JSONDecoder().decode([Container].self, from: data)
-                    print(decodedData)
-                    containersAPI = decodedData
-                    errorMessage = nil // Clear error if successful
-                } catch {
-                    errorMessage = "JSON Parsing Error: \(error.localizedDescription)"
-                }
+                // Store JSON as `jsonData` and trigger rendering
+                self.jsonData = data
+                loadAndRenderFromJSON(content: nil) // Update the UI
             }
         }.resume()
     }
 
-
-
-    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent) {
+    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
         guard let jsonData = jsonData else { return }
 
         do {
@@ -172,68 +159,52 @@ struct ContentView: View {
                let container = containers.first {
                 
                 containerCount = containers.count
-                
+
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
-                
+
                 let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
                 let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
                 let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
-                
-                content.add(containerEntity)
-                //content.addAnchor(AnchorEntity(world: [0, 0, 0]))  // Create an anchor to add the entity
-                //content.anchors[0].addChild(containerEntity)
+
+                content?.add(containerEntity)
                 containerEntity.position = containerPosition
-                
-                // Rotate container 45 degrees
-                //containerEntity.transform.rotation = simd_quatf(angle: containerRotation, axis: [0, 1, 0])
-                
-                // Extract the "locations" string and split by \r (which separates each box)
+
                 if let locations = container["locations"] as? String {
                     let boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
                     
                     for boxDetail in boxDetails {
                         boxCount += 1
                         let values = boxDetail.components(separatedBy: ",")
-                        
-                        // Extract the relevant values from the locations string
+
                         if values.count >= 11 {
-                            let boxLength = (Float(values[3]) ?? 0.0) / 10000  // in meters
-                            let boxWidth = (Float(values[4]) ?? 0.0) / 10000   // in meters
-                            let boxHeight = (Float(values[5]) ?? 0.0) / 10000  // in meters
+                            let boxLength = (Float(values[3]) ?? 0.0) / 10000
+                            let boxWidth = (Float(values[4]) ?? 0.0) / 10000
+                            let boxHeight = (Float(values[5]) ?? 0.0) / 10000
                             let boxColor = hexStringToColor(hex: values[6])
-                            let boxX = (Float(values[8]) ?? 0.0) / 10000       // in meters
-                            let boxY = (Float(values[10]) ?? 0.0) / 10000       // in meters
-                            let boxZ = (Float(values[9]) ?? 0.0) / 10000      // in meters
-                                                        
-                            // Create the box entity
+                            let boxX = (Float(values[8]) ?? 0.0) / 10000
+                            let boxY = (Float(values[10]) ?? 0.0) / 10000
+                            let boxZ = (Float(values[9]) ?? 0.0) / 10000
+
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
                             let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
                             let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-                                                        
-                            // Adjust the boxes' starting position from the center to the corner
-                            let adjustedBoxPosition = SIMD3<Float>(
-                                    boxX - (containerLength / 2) + (boxLength / 2),
-                                    boxY - (containerHeight / 2) + (boxHeight / 2),
-                                    boxZ - (containerWidth / 2) + (boxWidth / 2)
-                                )
 
-                            // Position the box inside the container
-                            // boxEntity.position = SIMD3<Float>(Float(boxX), Float(boxY), Float(boxZ))
+                            let adjustedBoxPosition = SIMD3<Float>(
+                                boxX - (containerLength / 2) + (boxLength / 2),
+                                boxY - (containerHeight / 2) + (boxHeight / 2),
+                                boxZ - (containerWidth / 2) + (boxWidth / 2)
+                            )
+
                             boxEntity.position = adjustedBoxPosition
-                            
-                            // Add the box to the container
                             containerEntity.addChild(boxEntity)
-                            
-                            // figuring out the delta between the container and the boxes
-                            print("The boxes extend beyond the container in these values:\n\(boxX+boxLength-containerLength)\n\(boxY+boxHeight-containerHeight)\n\(boxZ+boxWidth-containerWidth)")
                         }
                     }
                 }
             }
         } catch {
-            print("Error loading the JSON file: \(error)")
+            errorMessage = "Error loading JSON: \(error.localizedDescription)"
         }
     }
     //[DEPRECATED] Load the JSON data and prepare containers
