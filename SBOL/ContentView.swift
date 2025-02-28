@@ -58,53 +58,91 @@ struct ContentView: View {
                                     .padding()
                             }
             } else {
-                VStack {
-                    // Display the current container number and box count
-                    Text("Container: \(currentContainerIndex + 1) / \(containerCount)")
-                        .font(.headline)
-                        .padding(.top)
-                    Text("Boxes in this container: \(boxCount)")
-                        .font(.subheadline)
-                        //.padding(.bottom)
+                        // UI after JSON is loaded
+                        HStack {
+                            // Left Panel with Container Details
+                            VStack(alignment: .leading) {
+                                Text("Container Details")
+                                    .font(.title)
+                                    .bold()
+                                    .padding(.bottom, 10)
 
-                    // Arrow buttons for navigation
-                    HStack {
-                        Button(action: showPreviousContainer) {
-                            Image(systemName: "arrow.left.circle.fill")
-                                .font(.system(size: 30))
+                                Text("Shipment ID: \(shipmentID)")
+                                    .font(.headline)
+
+                                Text("Total Containers: \(containerCount)")
+                                Text("Current Container: \(currentContainerIndex + 1) / \(containerCount)")
+                                Text("Boxes in Container: \(boxCount)")
+                                
+                                Spacer()
+                                
+                                Button("Reset") {
+                                    resetView()
+                                }
+                                .padding()
+                            }
+                            .frame(width: 300)
+                            .background(Color.gray.opacity(0.2)) // Light gray background
+                            .cornerRadius(10)
+                            .padding()
+
+                            // 3D Container Display
+                            ZStack {
+                                RealityView { content in
+                                    loadAndRenderFromJSON(content: content)  // Render container
+                                }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            }
                         }
-                        .disabled(currentContainerIndex == 0) // Disable if at the first container
-
-                        Spacer()
-
-                        Button(action: showNextContainer) {
-                            Image(systemName: "arrow.right.circle.fill")
-                                .font(.system(size: 30))
-                        }
-                        .disabled(currentContainerIndex == containers.count - 1) // Disable if at the last container
                     }
-                    .padding(.horizontal)
-
-                    // Re-add RealityView for rendering the container
-                    ZStack {
-                        RealityView { content in
-                            loadAndRenderFromJSON(content: content)  // Render the current container
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                }
-                
-                // Reset button in main window
-                Button(action: resetView) {
-                    Text("Reset")
-                        //.frame(height: 15)
-                        //.foregroundColor(.red)
-                        .padding()
-                        //.background(Color.black.opacity(0.1))
-                        .cornerRadius(10)
-                }
-                .padding()
-            }
+//            } else {
+//                VStack {
+//                    // Display the current container number and box count
+//                    Text("Container: \(currentContainerIndex + 1) / \(containerCount)")
+//                        .font(.headline)
+//                        .padding(.top)
+//                    Text("Boxes in this container: \(boxCount)")
+//                        .font(.subheadline)
+//                        //.padding(.bottom)
+//
+//                    // Arrow buttons for navigation
+//                    HStack {
+//                        Button(action: showPreviousContainer) {
+//                            Image(systemName: "arrow.left.circle.fill")
+//                                .font(.system(size: 30))
+//                        }
+//                        .disabled(currentContainerIndex == 0) // Disable if at the first container
+//
+//                        Spacer()
+//
+//                        Button(action: showNextContainer) {
+//                            Image(systemName: "arrow.right.circle.fill")
+//                                .font(.system(size: 30))
+//                        }
+//                        .disabled(currentContainerIndex == containers.count - 1) // Disable if at the last container
+//                    }
+//                    .padding(.horizontal)
+//
+//                    // Re-add RealityView for rendering the container
+//                    ZStack {
+//                        RealityView { content in
+//                            loadAndRenderFromJSON(content: content)  // Render the current container
+//                        }
+//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                    }
+//                }
+//                
+//                // Reset button in main window
+//                Button(action: resetView) {
+//                    Text("Reset")
+//                        //.frame(height: 15)
+//                        //.foregroundColor(.red)
+//                        .padding()
+//                        //.background(Color.black.opacity(0.1))
+//                        .cornerRadius(10)
+//                }
+//                .padding()
+//            }
         }
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
@@ -172,7 +210,7 @@ struct ContentView: View {
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
-
+                
                 let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
                 let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
                 let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
@@ -208,6 +246,7 @@ struct ContentView: View {
 
                             boxEntity.position = adjustedBoxPosition
                             containerEntity.addChild(boxEntity)
+                            
                         }
                     }
                 }
@@ -258,7 +297,9 @@ struct ContentView: View {
 
     // Reset view to ask for JSON again
     func resetView() {
+        shipmentID = ""
         jsonData = nil
+        errorMessage = nil
         containers.removeAll()
         currentContainerIndex = 0
         boxCount = 0
