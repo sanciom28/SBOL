@@ -19,7 +19,7 @@ struct ContentView: View {
     @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
-    
+    @State private var shipmentID: String = ""
     @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
 
@@ -34,11 +34,19 @@ struct ContentView: View {
                     .font(.system(size: 28))
                     .italic()
                     .padding(.bottom, 80)
+                Text("Enter Shipment ID:")
+                    .font(.headline)
+                TextField("Shipment ID", text: $shipmentID)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .keyboardType(.numberPad)
+                                .frame(width: 1000)
+                                .padding()
                 Button("Load from API") {
                     fetchJSONFromAPI()
                 }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
+                    .disabled(shipmentID.isEmpty)
                 Button("Load from file") {
                     showDocumentPicker = true
                 }
@@ -105,50 +113,51 @@ struct ContentView: View {
     }
     
     func fetchJSONFromAPI() {
-        let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
-
-        // Create the JSON payload
-        let requestBody: [String: Any] = [
-            "qpm_calcdb": "qpm_calcdb",
-            "shipment": 3934465 // Change this dynamically later
-        ]
-
-        // Convert to JSON string and encode for URL
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
-              let jsonString = String(data: jsonData, encoding: .utf8)?
-                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            DispatchQueue.main.async { errorMessage = "Failed to encode request JSON" }
-            return
-        }
-
-        let urlString = baseURL + jsonString
-        guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async { errorMessage = "Invalid API URL" }
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    errorMessage = "Request failed: \(error.localizedDescription)"
-                    return
-                }
-
-                guard let data = data else {
-                    errorMessage = "No data received"
-                    return
-                }
-
-                // Store JSON as `jsonData` and trigger rendering
-                self.jsonData = data
-                loadAndRenderFromJSON(content: nil) // Update the UI
+            guard let shipmentNumber = Int(shipmentID) else {
+                errorMessage = "Invalid shipment ID"
+                return
             }
-        }.resume()
-    }
+
+            let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
+            let requestBody: [String: Any] = [
+                "qpm_calcdb": "qpm_calcdb",
+                "shipment": shipmentNumber
+            ]
+
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
+                  let jsonString = String(data: jsonData, encoding: .utf8)?
+                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+                DispatchQueue.main.async { errorMessage = "Failed to encode request JSON" }
+                return
+            }
+
+            let urlString = baseURL + jsonString
+            guard let url = URL(string: urlString) else {
+                DispatchQueue.main.async { errorMessage = "Invalid API URL" }
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
+
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        errorMessage = "Request failed: \(error.localizedDescription)"
+                        return
+                    }
+
+                    guard let data = data else {
+                        errorMessage = "No data received"
+                        return
+                    }
+
+                    self.jsonData = data
+                    loadAndRenderFromJSON(content: nil)
+                }
+            }.resume()
+        }
 
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
         guard let jsonData = jsonData else { return }
