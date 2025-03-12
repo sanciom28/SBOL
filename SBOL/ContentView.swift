@@ -19,9 +19,16 @@ struct ContentView: View {
     @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
+    @State private var boxData: [Int: BoxInfo] = [:] // Dictionary with boxID as key
     @State private var shipmentID: String = ""
     @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
+    
+    struct BoxInfo {
+        var count: Int
+        var color: UIColor
+        var dimensions: SIMD3<Float> // (length, height, width)
+    }
 
     var body: some View {
         VStack {
@@ -95,54 +102,7 @@ struct ContentView: View {
                             }
                         }
                     }
-//            } else {
-//                VStack {
-//                    // Display the current container number and box count
-//                    Text("Container: \(currentContainerIndex + 1) / \(containerCount)")
-//                        .font(.headline)
-//                        .padding(.top)
-//                    Text("Boxes in this container: \(boxCount)")
-//                        .font(.subheadline)
-//                        //.padding(.bottom)
-//
-//                    // Arrow buttons for navigation
-//                    HStack {
-//                        Button(action: showPreviousContainer) {
-//                            Image(systemName: "arrow.left.circle.fill")
-//                                .font(.system(size: 30))
-//                        }
-//                        .disabled(currentContainerIndex == 0) // Disable if at the first container
-//
-//                        Spacer()
-//
-//                        Button(action: showNextContainer) {
-//                            Image(systemName: "arrow.right.circle.fill")
-//                                .font(.system(size: 30))
-//                        }
-//                        .disabled(currentContainerIndex == containers.count - 1) // Disable if at the last container
-//                    }
-//                    .padding(.horizontal)
-//
-//                    // Re-add RealityView for rendering the container
-//                    ZStack {
-//                        RealityView { content in
-//                            loadAndRenderFromJSON(content: content)  // Render the current container
-//                        }
-//                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                    }
-//                }
-//                
-//                // Reset button in main window
-//                Button(action: resetView) {
-//                    Text("Reset")
-//                        //.frame(height: 15)
-//                        //.foregroundColor(.red)
-//                        .padding()
-//                        //.background(Color.black.opacity(0.1))
-//                        .cornerRadius(10)
-//                }
-//                .padding()
-//            }
+
         }
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
@@ -255,45 +215,6 @@ struct ContentView: View {
             errorMessage = "Error loading JSON: \(error.localizedDescription)"
         }
     }
-    //[DEPRECATED] Load the JSON data and prepare containers
-//    func loadJSONData() {
-//        guard let jsonData = jsonData else { return }
-//
-//        do {
-//            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-//               let loadedContainers = jsonObject["containers"] as? [[String: Any]] {
-//                containers = loadedContainers
-//                currentContainerIndex = 0 // Start with the first container
-//                loadAndRenderCurrentContainer(content: nil) // Load first container immediately
-//            }
-//        } catch {
-//            print("Failed to parse JSON: \(error)")
-//        }
-//    }
-
-    // Render the currently selected container
-    func loadAndRenderCurrentContainer(content: RealityKit.RealityViewContent?) {
-        guard currentContainerIndex < containers.count else { return }
-
-        let container = containers[currentContainerIndex]
-        let containerLength = Float(container["container_length"] as? Double ?? 0) / 1000
-        let containerWidth = Float(container["container_width"] as? Double ?? 0) / 1000
-        let containerHeight = Float(container["container_height"] as? Double ?? 0) / 1000
-
-        let containerEntity = ModelEntity(mesh: MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth]))
-        containerEntity.position = containerPosition
-        containerEntity.transform.rotation = simd_quatf(angle: containerRotation, axis: [0, 1, 0])
-
-        content?.add(containerEntity)
-
-        if let locationsString = container["locations"] as? String {
-            let boxes = createBoxesFromLocations(locationsString)
-            boxCount = boxes.count
-            for box in boxes {
-                containerEntity.addChild(box)
-            }
-        }
-    }
 
     // Reset view to ask for JSON again
     func resetView() {
@@ -316,22 +237,6 @@ struct ContentView: View {
         }
 
         return boxes
-    }
-
-    // Show the previous container
-    func showPreviousContainer() {
-        if currentContainerIndex > 0 {
-            currentContainerIndex -= 1
-            loadAndRenderCurrentContainer(content: nil)
-        }
-    }
-
-    // Show the next container
-    func showNextContainer() {
-        if currentContainerIndex < containers.count - 1 {
-            currentContainerIndex += 1
-            loadAndRenderCurrentContainer(content: nil)
-        }
     }
 
     // Helper function to convert hex color code to UIColor
