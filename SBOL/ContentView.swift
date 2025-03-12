@@ -226,19 +226,6 @@ struct ContentView: View {
         boxCount = 0
     }
 
-    // Create boxes from the locations string in JSON
-    func createBoxesFromLocations(_ locationsString: String) -> [Entity] {
-        var boxes: [Entity] = []
-        let boxInfoList = locationsString.split(separator: "\r")
-
-        for boxInfo in boxInfoList {
-            let boxEntity = ModelEntity(mesh: MeshResource.generateBox(size: [0.1, 0.1, 0.1]))  // Example size
-            boxes.append(boxEntity)
-        }
-
-        return boxes
-    }
-
     // Helper function to convert hex color code to UIColor
     func hexStringToColor(hex: String) -> UIColor {
         var cleanedHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
