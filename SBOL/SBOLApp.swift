@@ -17,17 +17,8 @@ struct SBOLApp: App {
             ContentView()
                 .environment(appModel)
         }
-
-        ImmersiveSpace(id: appModel.immersiveSpaceID) {
-            ImmersiveView()
-                .environment(appModel)
-                .onAppear {
-                    appModel.immersiveSpaceState = .open
-                }
-                .onDisappear {
-                    appModel.immersiveSpaceState = .closed
-                }
+        WindowGroup (id: "ContainerView") {
+            ContainerView()
         }
-        .immersionStyle(selection: .constant(.mixed), in: .mixed)
      }
 }

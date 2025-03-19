@@ -24,6 +24,9 @@ struct ContentView: View {
     @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
     
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+    
     struct BoxInfo {
         var count: Int
         var color: UIColor
@@ -59,6 +62,18 @@ struct ContentView: View {
                 }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
+                Button(action: {
+                                               openWindow(id: "ContainerView")
+                                               print("Show container window")
+                                           }) {
+                                               Text("Show Container Window")
+                                                   .font(.headline)
+                                                   .padding()
+                                                   .background(Color.blue)
+                                                   .foregroundColor(.white)
+                                                   .cornerRadius(10)
+                                           }
+                                           .buttonStyle(.plain)
                 if let error = errorMessage {
                                 Text(error)
                                     .foregroundColor(.red)
