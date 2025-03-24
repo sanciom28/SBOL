@@ -27,6 +27,8 @@ struct ContentView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
     
+    @Environment(ViewModel.self) var model
+    
     struct BoxInfo {
         var count: Int
         var color: UIColor
@@ -34,6 +36,9 @@ struct ContentView: View {
     }
 
     var body: some View {
+        
+        @Bindable var model = model
+        
         VStack {
             if jsonData == nil {
                 Text("SBOL")
@@ -79,6 +84,15 @@ struct ContentView: View {
                                     .foregroundColor(.red)
                                     .padding()
                             }
+                Toggle("Open the secondary volume", isOn: $model.secondaryVolumeIsShowing)
+                                .toggleStyle(.button)
+                                .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                    if isShowing {
+                                        openWindow(id: "secondaryVolume")
+                                    } else {
+                                        dismissWindow(id: "secondaryVolume")
+                                    }
+                                }
             } else {
                         // UI after JSON is loaded
                         HStack {
