@@ -24,6 +24,8 @@ struct ContentView: View {
     @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
     
+    @StateObject var containerViewModel = ContainerViewModel()
+    
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
     
@@ -213,7 +215,6 @@ struct ContentView: View {
                     for boxDetail in boxDetails {
                         boxCount += 1
                         let values = boxDetail.components(separatedBy: ",")
-                        
                         if values.count >= 11 {
                             let boxLength = (Float(values[3]) ?? 0.0) / 10000
                             let boxWidth = (Float(values[4]) ?? 0.0) / 10000
@@ -238,7 +239,9 @@ struct ContentView: View {
                             
                         }
                     }
-                }
+                    
+                    // Create container data object
+                    containerViewModel.updateContainerData(length: containerLength, width: containerWidth, height: containerHeight, boxes: locations)                }
             }
         } catch {
             errorMessage = "Error loading JSON: \(error.localizedDescription)"
