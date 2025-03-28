@@ -216,9 +216,9 @@ struct ContentView: View {
                         boxCount += 1
                         let values = boxDetail.components(separatedBy: ",")
                         if values.count >= 11 {
-                            let boxLength = (Float(values[3]) ?? 0.0) / 10000
-                            let boxWidth = (Float(values[4]) ?? 0.0) / 10000
-                            let boxHeight = (Float(values[5]) ?? 0.0) / 10000
+                            let boxLength = -0.001 + (Float(values[3]) ?? 0.0) / 10000
+                            let boxWidth = -0.001 + (Float(values[4]) ?? 0.0) / 10000
+                            let boxHeight = -0.001 + (Float(values[5]) ?? 0.0) / 10000
                             let boxColor = hexStringToColor(hex: values[6])
                             let boxX = (Float(values[8]) ?? 0.0) / 10000
                             let boxY = (Float(values[10]) ?? 0.0) / 10000

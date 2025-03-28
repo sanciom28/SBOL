@@ -25,5 +25,9 @@ class ContainerViewModel: ObservableObject {
     func createContainer() {
         //
     }
+    
+    func printContainerData() {
+        print(containerLength, containerWidth, containerHeight, boxes)
+    }
 
 }
