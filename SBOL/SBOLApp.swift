@@ -14,15 +14,20 @@ struct SBOLApp: App {
     
     @State private var model = ViewModel()
 
+    @StateObject private var containerVM = ContainerViewModel()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(model)
+                .environmentObject(containerVM)
         }
         WindowGroup (id: "ContainerView") {
             ContainerView()
                 .environment(model)
+                .environmentObject(containerVM)
         }
+        .windowStyle(.volumetric)
         WindowGroup (id: "secondaryVolume") {
             SecondaryVolumeView()
                             .environment(model)

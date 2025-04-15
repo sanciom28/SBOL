@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
     
-    @StateObject var containerViewModel = ContainerViewModel()
+    @EnvironmentObject var containerViewModel: ContainerViewModel
     
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
@@ -71,16 +71,12 @@ struct ContentView: View {
                 .font(.system(size: 24))
                 Button(action: {
                     openWindow(id: "ContainerView")
-                    print("Show container window")
+                    print("my container window.")
                 }) {
-                    Text("Show Container Window")
-                        .font(.headline)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    Text("Show My Container Window")
                 }
-                .buttonStyle(.plain)
+                .frame(width: 360, height: 80)
+                .font(.system(size: 24))
                 if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
@@ -111,6 +107,16 @@ struct ContentView: View {
                         Text("Total Containers: \(containerCount)")
                         Text("Current Container: \(currentContainerIndex + 1) / \(containerCount)")
                         Text("Boxes in Container: \(boxCount)")
+                        Toggle("toggle volume", isOn: $model.secondaryVolumeIsShowing)
+                                        .toggleStyle(.button)
+                                        .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                            if isShowing {
+                                                openWindow(id: "secondaryVolume")
+                                            } else {
+                                                dismissWindow(id: "secondaryVolume")
+                                            }
+                                        }
+
                         
                         Spacer()
                         
@@ -123,7 +129,9 @@ struct ContentView: View {
                     .background(Color.gray.opacity(0.2)) // Light gray background
                     .cornerRadius(10)
                     .padding()
-                    
+                    Button("Show My Container Window") {
+                        openWindow(id: "ContainerView")
+                    }
                     // 3D Container Display
                     ZStack {
                         RealityView { content in
@@ -168,7 +176,7 @@ struct ContentView: View {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
+        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization") //TODO: this is unsecure. encrypt
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -209,6 +217,7 @@ struct ContentView: View {
                 content?.add(containerEntity)
                 containerEntity.position = containerPosition
                 
+                
                 if let locations = container["locations"] as? String {
                     let boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
                     
@@ -239,9 +248,14 @@ struct ContentView: View {
                             
                         }
                     }
-                    
+                    print(type(of: jsonObject))
+                    containerViewModel.addRawJSON(json: jsonObject)
                     // Create container data object
-                    containerViewModel.updateContainerData(length: containerLength, width: containerWidth, height: containerHeight, boxes: locations)                }
+                    containerViewModel.updateContainerData(length: containerLength, width: containerWidth, height: containerHeight, boxes: locations)
+                    containerViewModel.createContainer()
+                    containerViewModel.printContainerData()
+                }
+                
             }
         } catch {
             errorMessage = "Error loading JSON: \(error.localizedDescription)"

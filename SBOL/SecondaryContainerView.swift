@@ -1,4 +1,12 @@
 //
+//  SecondaryVolumeView 2.swift
+//  SBOL
+//
+//  Created by Matteo Sancio on 4/11/25.
+//
+
+
+//
 //  SecondaryVolumeView.swift
 //  SBOL
 //
@@ -8,14 +16,14 @@
 
 import SwiftUI
 
-struct SecondaryVolumeView: View {
+struct SecondaryContainerView: View {
     
     @Environment(ViewModel.self) private var model
     
     var body: some View {
     
         ZStack(alignment: .bottom) {
-            CubeView()
+            //ContainerView()
             
             Text("This is a volume")
                 .padding()
@@ -27,9 +35,4 @@ struct SecondaryVolumeView: View {
         }
         
     }
-}
-
-#Preview {
-    SecondaryVolumeView()
-        .environment(ViewModel())
 }

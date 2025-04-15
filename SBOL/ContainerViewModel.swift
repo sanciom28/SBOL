@@ -9,17 +9,28 @@
 import SwiftUI
 import RealityKit
 
-class ContainerViewModel: ObservableObject {
+final class ContainerViewModel: ObservableObject {
+    @Published var rawJSON: Dictionary<String, Any> = [:]
     @Published var containerLength: Float = 0.0
     @Published var containerWidth: Float = 0.0
     @Published var containerHeight: Float = 0.0
     @Published var boxes: String = ""
+    
+    @Published var containerEntity: ModelEntity? = nil // idk
     
     func updateContainerData(length: Float, width: Float, height: Float, boxes: String) {
         self.containerLength = length
         self.containerWidth = width
         self.containerHeight = height
         self.boxes = boxes
+    }
+    
+    func addRawJSON(json: Dictionary<String, Any>) {
+        self.rawJSON = json
+    }
+    
+    func printContainerData() {
+        print(containerLength, containerWidth, containerHeight, boxes)
     }
     
     func createContainer() {
@@ -31,9 +42,15 @@ class ContainerViewModel: ObservableObject {
         let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
         let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
         let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
+
+        print("Container created in CVM")
         
         //content?.add(containerEntity)
         //containerEntity.position = containerPosition
+        
+        DispatchQueue.main.async {
+            self.containerEntity = containerEntity
+        }
         
         if boxes != "" {
             let boxDetails = boxes.components(separatedBy: "\r").filter { !$0.isEmpty }
@@ -90,9 +107,7 @@ class ContainerViewModel: ObservableObject {
             return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
         }
         
-        func printContainerData() {
-            print(containerLength, containerWidth, containerHeight, boxes)
-        }
+
         
     }
 }
