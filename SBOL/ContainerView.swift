@@ -13,30 +13,26 @@ struct ContainerView: View {
     @EnvironmentObject var ContainerViewModel: ContainerViewModel  // Access shared container data
     @State private var angle: Angle = .degrees(0)
     
-    
     var body: some View {
-        
-
-        RealityView { content in
-            renderJSON(content: content)  // Render container
+        ZStack(alignment: .bottom) {
+            RealityView { content in
+                renderJSON(content: content)  // Render container
+            }
+            .rotation3DEffect(angle, axis: .y)
+            .animation(.linear(duration: 18).repeatForever(), value: angle)
+            .onAppear {
+                angle = .degrees(359)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        Text("Container dimensions: \(ContainerViewModel.containerLength) x \(ContainerViewModel.containerWidth) x \(ContainerViewModel.containerHeight)")
-
-            
-            //        RealityView { content in
-            //            loadAndRenderFromJSON(content: content)  // Render container
-            //        }
-            //        .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-        }
+    }
     
     func renderJSON (content: RealityKit.RealityViewContent?) {
-
+        
         do {
             if let containers = ContainerViewModel.rawJSON["containers"] as? [[String: Any]],
                let container = containers.first {
-                                
+                
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
@@ -104,31 +100,31 @@ struct ContainerView: View {
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
     
-    }
-    
-    //    @Environment(\.dismissWindow) private var dismissWindow
-    
-    //    var body: some View {
-    //           NavigationSplitView {
-    //               VStack {
-    //                   Button(action: {
-    //                       dismissWindow(id: "ContainerView")
-    //                   }) {
-    //                       Text("Dismiss container Window")
-    //                           .font(.headline)
-    //                           .padding()
-    //                           .background(Color.blue)
-    //                           .foregroundColor(.white)
-    //                           .cornerRadius(10)
-    //                   }
-    //                   .buttonStyle(.plain)
-    //               }
-    //               .frame(maxWidth: .infinity, alignment: .top)
-    //               .navigationTitle("Sidebar")
-    //           } detail: {
-    //               Text("Detail")
-    //           }
-    //
-    //       }
-    
+}
+
+//    @Environment(\.dismissWindow) private var dismissWindow
+
+//    var body: some View {
+//           NavigationSplitView {
+//               VStack {
+//                   Button(action: {
+//                       dismissWindow(id: "ContainerView")
+//                   }) {
+//                       Text("Dismiss container Window")
+//                           .font(.headline)
+//                           .padding()
+//                           .background(Color.blue)
+//                           .foregroundColor(.white)
+//                           .cornerRadius(10)
+//                   }
+//                   .buttonStyle(.plain)
+//               }
+//               .frame(maxWidth: .infinity, alignment: .top)
+//               .navigationTitle("Sidebar")
+//           } detail: {
+//               Text("Detail")
+//           }
+//
+//       }
+
 
