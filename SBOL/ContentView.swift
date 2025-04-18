@@ -82,7 +82,7 @@ struct ContentView: View {
                         .foregroundColor(.red)
                         .padding()
                 }
-                Toggle("Open the secondary volume", isOn: $model.secondaryVolumeIsShowing)
+                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
                     .toggleStyle(.button)
                     .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
                         if isShowing {
@@ -93,7 +93,6 @@ struct ContentView: View {
                     }
             } else {
                 // UI after JSON is loaded
-                HStack {
                     // Left Panel with Container Details
                     VStack(alignment: .leading) {
                         Text("Container Details")
@@ -111,9 +110,9 @@ struct ContentView: View {
                                         .toggleStyle(.button)
                                         .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
                                             if isShowing {
-                                                openWindow(id: "secondaryVolume")
+                                                openWindow(id: "ContainerView")
                                             } else {
-                                                dismissWindow(id: "secondaryVolume")
+                                                dismissWindow(id: "ContainerView")
                                             }
                                         }
 
@@ -132,14 +131,15 @@ struct ContentView: View {
                     Button("Show My Container Window") {
                         openWindow(id: "ContainerView")
                     }
-                    // 3D Container Display
-                    ZStack {
-                        RealityView { content in
-                            loadAndRenderFromJSON(content: content)  // Render container
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+                    // Old 3D Container Display
+                
+                    RealityView { content in
+                        loadAndRenderFromJSON(content: content)  // Render container
                     }
-                }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                
             }
             
         }
@@ -203,57 +203,18 @@ struct ContentView: View {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
-                
+
                 containerCount = containers.count
                 
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
                 let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
-                
-                let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
-                let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
-                let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
-                
-                content?.add(containerEntity)
-                containerEntity.position = containerPosition
-                
-                
+
                 if let locations = container["locations"] as? String {
-                    let boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
                     
-                    for boxDetail in boxDetails {
-                        boxCount += 1
-                        let values = boxDetail.components(separatedBy: ",")
-                        if values.count >= 11 {
-                            let boxLength = -0.001 + (Float(values[3]) ?? 0.0) / 10000
-                            let boxWidth = -0.001 + (Float(values[4]) ?? 0.0) / 10000
-                            let boxHeight = -0.001 + (Float(values[5]) ?? 0.0) / 10000
-                            let boxColor = hexStringToColor(hex: values[6])
-                            let boxX = (Float(values[8]) ?? 0.0) / 10000
-                            let boxY = (Float(values[10]) ?? 0.0) / 10000
-                            let boxZ = (Float(values[9]) ?? 0.0) / 10000
-                            
-                            let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
-                            let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
-                            let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-                            
-                            let adjustedBoxPosition = SIMD3<Float>(
-                                boxX - (containerLength / 2) + (boxLength / 2),
-                                boxY - (containerHeight / 2) + (boxHeight / 2),
-                                boxZ - (containerWidth / 2) + (boxWidth / 2)
-                            )
-                            
-                            boxEntity.position = adjustedBoxPosition
-                            containerEntity.addChild(boxEntity)
-                            
-                        }
-                    }
-                    print(type(of: jsonObject))
                     containerViewModel.addRawJSON(json: jsonObject)
                     // Create container data object
                     containerViewModel.updateContainerData(length: containerLength, width: containerWidth, height: containerHeight, boxes: locations)
-                    containerViewModel.createContainer()
-                    containerViewModel.printContainerData()
                 }
                 
             }

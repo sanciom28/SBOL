@@ -41,7 +41,6 @@
 			membershipExceptions = (
 				BoxesRender.swift,
 				BoxModel.swift,
-				BoxViewModel.swift,
 			);
 			target = 7B869BAD2C83FEFE007BE0C3 /* SBOLTests */;
 		};
