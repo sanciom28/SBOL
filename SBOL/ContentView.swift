@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     
-    @State private var containerPosition: SIMD3<Float> = [0, 0.016, 0]
+    @State private var containerPosition: SIMD3<Float> = [0, -50, 0]
     @State private var containerRotation: Float = 0.5
     @State private var showDocumentPicker = false
     @State private var jsonData: Data? = nil
@@ -82,15 +82,15 @@ struct ContentView: View {
                         .foregroundColor(.red)
                         .padding()
                 }
-                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
-                    .toggleStyle(.button)
-                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                        if isShowing {
-                            openWindow(id: "secondaryVolume")
-                        } else {
-                            dismissWindow(id: "secondaryVolume")
-                        }
-                    }
+//                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
+//                    .toggleStyle(.button)
+//                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+//                        if isShowing {
+//                            openWindow(id: "secondaryVolume")
+//                        } else {
+//                            dismissWindow(id: "secondaryVolume")
+//                        }
+//                    }
             } else {
                 // UI after JSON is loaded
                     // Left Panel with Container Details
@@ -191,7 +191,6 @@ struct ContentView: View {
                 }
                 
                 self.jsonData = data
-                loadAndRenderFromJSON(content: nil)
             }
         }.resume()
     }
@@ -206,15 +205,9 @@ struct ContentView: View {
 
                 containerCount = containers.count
                 
-                let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
-                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
-                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
-
-                if let locations = container["locations"] as? String {
+                if (container["locations"] != nil) {
                     
                     containerViewModel.addRawJSON(json: jsonObject)
-                    // Create container data object
-                    containerViewModel.updateContainerData(length: containerLength, width: containerWidth, height: containerHeight, boxes: locations)
                 }
                 
             }

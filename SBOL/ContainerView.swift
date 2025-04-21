@@ -11,20 +11,28 @@ import RealityKit
 struct ContainerView: View {
     
     @EnvironmentObject var ContainerViewModel: ContainerViewModel  // Access shared container data
+    @State private var containerPosition: SIMD3<Float> = [0, -0.3, 0]
     @State private var angle: Angle = .degrees(0)
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            RealityView { content in
-                renderJSON(content: content)  // Render container
+        if ContainerViewModel.rawJSON.isEmpty {
+            Text("No container selected.")
+                .font(.largeTitle)
+        } else {
+            ZStack(alignment: .bottom) {
+                RealityView { content in
+                    renderJSON(content: content)  // Render container
+                }
+                .rotation3DEffect(angle, axis: .y)
+                .animation(.linear(duration: 18).repeatForever(), value: angle)
+                .onAppear {
+                    angle = .degrees(359)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .rotation3DEffect(angle, axis: .y)
-            .animation(.linear(duration: 18).repeatForever(), value: angle)
-            .onAppear {
-                angle = .degrees(359)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
         }
+        
     }
     
     func renderJSON (content: RealityKit.RealityViewContent?) {
@@ -42,6 +50,7 @@ struct ContainerView: View {
                 let containerEntity = ModelEntity(mesh: containerMesh, materials: [containerMaterial])
                 
                 content?.add(containerEntity)
+                containerEntity.position = containerPosition
                 
                 if let locations = container["locations"] as? String {
                     let boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
@@ -49,12 +58,20 @@ struct ContainerView: View {
                     for boxDetail in boxDetails {
                         let values = boxDetail.components(separatedBy: ",")
                         if values.count >= 11 {
-                            let boxLength = -0.001 + (Float(values[3]) ?? 0.0) / 10000
-                            let boxWidth = -0.001 + (Float(values[4]) ?? 0.0) / 10000
+                            var boxLength: Float = 0.0
+                            var boxWidth: Float = 0.0
+                            if values[7] == "1" {
+                                boxLength = -0.001 + (Float(values[4]) ?? 0.0) / 10000
+                                boxWidth = -0.001 + (Float(values[3]) ?? 0.0) / 10000
+                            } else {
+                                boxLength = -0.001 + (Float(values[3]) ?? 0.0) / 10000
+                                boxWidth = -0.001 + (Float(values[4]) ?? 0.0) / 10000
+                            }
                             let boxHeight = -0.001 + (Float(values[5]) ?? 0.0) / 10000
                             let boxColor = hexStringToColor(hex: values[6])
                             let boxX = (Float(values[8]) ?? 0.0) / 10000
-                            let boxY = (Float(values[10]) ?? 0.0) / 10000
+                            let fixY = values[10].components(separatedBy: "\n")[0]
+                            let boxY = (Float(fixY) ?? 0.0) / 10000
                             let boxZ = (Float(values[9]) ?? 0.0) / 10000
                             
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
@@ -69,6 +86,7 @@ struct ContainerView: View {
                             
                             boxEntity.position = adjustedBoxPosition
                             containerEntity.addChild(boxEntity)
+                            print(adjustedBoxPosition)
                             
                         }
                     }
