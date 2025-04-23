@@ -51,20 +51,20 @@ struct ContentView: View {
                     .font(.system(size: 28))
                     .italic()
                     .padding(.bottom, 80)
-                Text("Enter Shipment ID:")
+                Text("Introduzca ID del contenedor:")
                     .font(.headline)
-                TextField("Shipment ID", text: $shipmentID)
+                TextField("ID del contenedor", text: $shipmentID)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
                     .frame(width: 1000)
                     .padding()
-                Button("Load from API") {
+                Button("Cargar desde API") {
                     fetchJSONFromAPI()
                 }
                 .frame(width: 360, height: 80)
                 .font(.system(size: 24))
                 .disabled(shipmentID.isEmpty)
-                Button("Load from file") {
+                Button("Cargar desde archivo") {
                     showDocumentPicker = true
                 }
                 .frame(width: 360, height: 80)
@@ -73,7 +73,7 @@ struct ContentView: View {
                     openWindow(id: "ContainerView")
                     print("my container window.")
                 }) {
-                    Text("Show My Container Window")
+                    Text("Ventana mía de prueba")
                 }
                 .frame(width: 360, height: 80)
                 .font(.system(size: 24))
@@ -95,18 +95,18 @@ struct ContentView: View {
                 // UI after JSON is loaded
                     // Left Panel with Container Details
                     VStack(alignment: .leading) {
-                        Text("Container Details")
+                        Text("Detalles del contenedor")
                             .font(.title)
                             .bold()
                             .padding(.bottom, 10)
                         
-                        Text("Shipment ID: \(shipmentID)")
+                        Text("ID del Envío: \(shipmentID)")
                             .font(.headline)
                         
-                        Text("Total Containers: \(containerCount)")
-                        Text("Current Container: \(currentContainerIndex + 1) / \(containerCount)")
-                        Text("Boxes in Container: \(boxCount)")
-                        Toggle("toggle volume", isOn: $model.secondaryVolumeIsShowing)
+                        Text("Num. total de contenedores: \(containerCount)")
+                        Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
+                        Text("Num. total de cajas: \(boxCount)")
+                        Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
                                         .toggleStyle(.button)
                                         .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
                                             if isShowing {
@@ -116,10 +116,9 @@ struct ContentView: View {
                                             }
                                         }
 
-                        
                         Spacer()
                         
-                        Button("Reset") {
+                        Button("Volver") {
                             resetView()
                         }
                         .padding()
@@ -190,9 +189,33 @@ struct ContentView: View {
                     return
                 }
                 
+                do {
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                    if jsonObject!["errormessage"] != nil {
+                        errorMessage = "Shipment not found"
+                        return
+                    }
+                } catch {
+                    errorMessage = "Error parsing JSON: \(error.localizedDescription)"
+                    return
+                }
+                
                 self.jsonData = data
+
             }
         }.resume()
+
+//        do {
+//            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+//                errorMessage = "Shipment not found"
+//                return
+//            }
+//        } catch {
+//            errorMessage = "Error parsing JSON: \(error.localizedDescription)"
+//            return
+//        }
+
+        
     }
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
@@ -224,6 +247,7 @@ struct ContentView: View {
         containers.removeAll()
         currentContainerIndex = 0
         boxCount = 0
+        dismissWindow(id: "ContainerView")
     }
     
     // Helper function to convert hex color code to UIColor

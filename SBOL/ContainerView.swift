@@ -16,7 +16,7 @@ struct ContainerView: View {
     
     var body: some View {
         if ContainerViewModel.rawJSON.isEmpty {
-            Text("No container selected.")
+            Text("Ningún contenedor seleccionado.")
                 .font(.largeTitle)
         } else {
             ZStack(alignment: .bottom) {
