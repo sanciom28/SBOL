@@ -21,14 +21,17 @@ struct SBOLApp: App {
             ContentView()
                 .environment(model)
                 .environmentObject(containerVM)
-        }
+        }.defaultSize(CGSize(width: 1100, height: 750))
+        
         WindowGroup (id: "ContainerView") {
             ContainerView()
                 .environment(model)
                 .environmentObject(containerVM)
+            
         }
         .windowStyle(.volumetric)
-        WindowGroup (id: "secondaryVolume") {
+            
+        WindowGroup (id: "SettingsView") {
             SecondaryVolumeView()
                             .environment(model)
         }

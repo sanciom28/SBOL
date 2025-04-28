@@ -31,6 +31,9 @@ struct ContentView: View {
     
     @Environment(ViewModel.self) var model
     
+    @State private var recentJSONs: [Data] = [] // Buffer for recent JSONs
+    
+    // Struct for table purposes
     struct BoxInfo {
         var count: Int
         var color: UIColor
@@ -40,6 +43,7 @@ struct ContentView: View {
     var body: some View {
         
         @Bindable var model = model
+        
         
         VStack {
             if jsonData == nil {
@@ -56,92 +60,117 @@ struct ContentView: View {
                 TextField("ID del contenedor", text: $shipmentID)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
-                    .frame(width: 1000)
+                    .frame(width: 500)
                     .padding()
+                    .onSubmit {
+                        fetchJSONFromAPI()
+                    }
                 Button("Cargar desde API") {
                     fetchJSONFromAPI()
                 }
                 .frame(width: 360, height: 80)
                 .font(.system(size: 24))
                 .disabled(shipmentID.isEmpty)
+                .padding(.bottom, -10)
                 Button("Cargar desde archivo") {
                     showDocumentPicker = true
                 }
                 .frame(width: 360, height: 80)
                 .font(.system(size: 24))
-                Button(action: {
-                    openWindow(id: "ContainerView")
-                    print("my container window.")
-                }) {
-                    Text("Ventana mía de prueba")
-                }
-                .frame(width: 360, height: 80)
-                .font(.system(size: 24))
+                .padding(.bottom, -10)
+                //                Button(action: {
+                //                    openWindow(id: "ContainerView")
+                //                    print("my container window.")
+                //                }) {
+                //                    Text("Ventana mía de prueba")
+                //                }
+                //                .frame(width: 360, height: 80)
+                //                .font(.system(size: 24))
                 if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
                         .padding()
                 }
-//                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
-//                    .toggleStyle(.button)
-//                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-//                        if isShowing {
-//                            openWindow(id: "secondaryVolume")
-//                        } else {
-//                            dismissWindow(id: "secondaryVolume")
-//                        }
-//                    }
+                Button("Cargar último contenedor") {
+                    loadRecentJSONs()   
+                    print("Recent JSONs: \(recentJSONs.count)")
+                    loadAndRenderFromJSON(content: nil)
+                }
+                .frame(width: 360, height: 80)
+                .font(.system(size: 24))
+                Button(action: {
+                    openWindow(id: "SettingsView")
+                }) {
+                    Image(systemName: "gearshape.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                    
+                }
+                .frame(width: 30, height: 30)
+                
+                
+                //                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
+                //                    .toggleStyle(.button)
+                //                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                //                        if isShowing {
+                //                            openWindow(id: "secondaryVolume")
+                //                        } else {
+                //                            dismissWindow(id: "secondaryVolume")
+                //                        }
+                //                    }
             } else {
                 // UI after JSON is loaded
-                    // Left Panel with Container Details
-                    VStack(alignment: .leading) {
-                        Text("Detalles del contenedor")
-                            .font(.title)
-                            .bold()
-                            .padding(.bottom, 10)
-                        
-                        Text("ID del Envío: \(shipmentID)")
-                            .font(.headline)
-                        
-                        Text("Num. total de contenedores: \(containerCount)")
-                        Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
-                        Text("Num. total de cajas: \(boxCount)")
-                        Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
-                                        .toggleStyle(.button)
-                                        .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                                            if isShowing {
-                                                openWindow(id: "ContainerView")
-                                            } else {
-                                                dismissWindow(id: "ContainerView")
-                                            }
-                                        }
-
-                        Spacer()
-                        
-                        Button("Volver") {
-                            resetView()
-                        }
-                        .padding()
-                    }
-                    .frame(width: 300)
-                    .background(Color.gray.opacity(0.2)) // Light gray background
-                    .cornerRadius(10)
-                    .padding()
-                    Button("Show My Container Window") {
-                        openWindow(id: "ContainerView")
-                    }
-                
-                    // Old 3D Container Display
-                
-                    RealityView { content in
-                        loadAndRenderFromJSON(content: content)  // Render container
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Left Panel with Container Details
+                VStack(alignment: .leading) {
+                    Text("Detalles del contenedor")
+                        .font(.title)
+                        .bold()
+                        .padding(.bottom, 10)
                     
+                    Text("ID del Envío: \(shipmentID)")
+                        .font(.headline)
+                    
+                    Text("Num. total de contenedores: \(containerCount)")
+                    Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
+                    Text("Num. total de cajas: \(boxCount)")
+                    Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
+                        .toggleStyle(.button)
+                        .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                            if isShowing {
+                                openWindow(id: "ContainerView")
+                            } else {
+                                dismissWindow(id: "ContainerView")
+                            }
+                        }
+                    
+                    Spacer()
+                    
+                    Button("Volver") {
+                        resetView()
+                    }
+                    .padding()
+                }
+                .frame(width: 300)
+                .background(Color.gray.opacity(0.2)) // Light gray background
+                .cornerRadius(10)
+                .padding()
+                Button("Show My Container Window") {
+                    openWindow(id: "ContainerView")
+                }
+                
+                // Old 3D Container Display
+                
+                RealityView { content in
+                    loadAndRenderFromJSON(content: content)  // Render container
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
                 
             }
             
         }
+        
+        
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
         }
@@ -201,20 +230,10 @@ struct ContentView: View {
                 }
                 
                 self.jsonData = data
-
+                addToRecentJSONs(data)
+                
             }
         }.resume()
-
-//        do {
-//            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-//                errorMessage = "Shipment not found"
-//                return
-//            }
-//        } catch {
-//            errorMessage = "Error parsing JSON: \(error.localizedDescription)"
-//            return
-//        }
-
         
     }
     
@@ -225,7 +244,7 @@ struct ContentView: View {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
-
+                
                 containerCount = containers.count
                 
                 if (container["locations"] != nil) {
@@ -236,6 +255,27 @@ struct ContentView: View {
             }
         } catch {
             errorMessage = "Error loading JSON: \(error.localizedDescription)"
+        }
+    }
+    
+    func addToRecentJSONs(_ json: Data) {
+        if recentJSONs.count >= 20 {
+            recentJSONs.removeFirst() // Remove the oldest JSON if buffer exceeds 20
+        }
+        recentJSONs.append(json)
+        saveRecentJSONs()
+    }
+    
+    // Save the buffer to UserDefaults
+    func saveRecentJSONs() {
+        let jsonStrings = recentJSONs.map { String(data: $0, encoding: .utf8) ?? "" }
+        UserDefaults.standard.set(jsonStrings, forKey: "RecentJSONs")
+    }
+    
+    // Load the buffer from UserDefaults
+    func loadRecentJSONs() {
+        if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
+            recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
         }
     }
     

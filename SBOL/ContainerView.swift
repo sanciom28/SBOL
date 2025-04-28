@@ -86,7 +86,6 @@ struct ContainerView: View {
                             
                             boxEntity.position = adjustedBoxPosition
                             containerEntity.addChild(boxEntity)
-                            print(adjustedBoxPosition)
                             
                         }
                     }
