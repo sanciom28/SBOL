@@ -157,11 +157,6 @@ struct ContentView: View {
                 .background(Color.gray.opacity(0.2)) // Light gray background
                 .cornerRadius(10)
                 .padding()
-                Button("Show My Container Window") {
-                    openWindow(id: "ContainerView")
-                }
-                
-                // Old 3D Container Display
 
                 RealityView { content in
                     loadAndRenderFromJSON(content: nil) // Render container
@@ -285,6 +280,12 @@ struct ContentView: View {
         }
     }
     
+    // Delete the buffer
+    func deleteRecentJSONs() {
+        recentJSONs.removeAll()
+        UserDefaults.standard.removeObject(forKey: "RecentJSONs")
+    }
+    
     // Reset view to ask for JSON again
     func resetView() {
         shipmentID = ""
@@ -320,43 +321,3 @@ struct ContentView: View {
     
 }
 
-struct DocumentPickerView: UIViewControllerRepresentable {
-    @Binding var jsonData: Data?
-    
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.json], asCopy: true)
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let parent: DocumentPickerView
-        
-        init(_ parent: DocumentPickerView) {
-            self.parent = parent
-        }
-        
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            if let url = urls.first {
-                do {
-                    parent.jsonData = try Data(contentsOf: url)
-                } catch {
-                    print("Failed to load JSON data: \(error)")
-                }
-            }
-        }
-        
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            print("Document picker was cancelled")
-        }
-        
-        
-    }
-    
-}

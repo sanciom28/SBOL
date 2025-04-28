@@ -1,3 +1,13 @@
+//
+//  DocumentPickerView.swift
+//  SBOL
+//
+//  Created by Matteo Sancio on 4/28/25.
+//
+import SwiftUI
+import RealityKit
+import UniformTypeIdentifiers
+
 struct DocumentPickerView: UIViewControllerRepresentable {
     @Binding var jsonData: Data?
     
