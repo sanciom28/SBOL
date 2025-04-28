@@ -41,9 +41,9 @@ struct ContainerView: View {
             if let containers = ContainerViewModel.rawJSON["containers"] as? [[String: Any]],
                let container = containers.first {
                 
-                let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.01
-                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.01
-                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.01
+                let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.002
+                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.002
+                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.002
                 
                 let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
                 let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
@@ -77,11 +77,11 @@ struct ContainerView: View {
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
                             let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
                             let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-                            
+                                                        
                             let adjustedBoxPosition = SIMD3<Float>(
-                                boxX - (containerLength / 2) + (boxLength / 2),
-                                boxY - (containerHeight / 2) + (boxHeight / 2),
-                                boxZ - (containerWidth / 2) + (boxWidth / 2)
+                                boxX - (containerLength / 2) + (boxLength / 2) + 0.001,
+                                boxY - (containerHeight / 2) + (boxHeight / 2) + 0.001,
+                                boxZ - (containerWidth / 2) + (boxWidth / 2) + 0.001
                             )
                             
                             boxEntity.position = adjustedBoxPosition
@@ -94,6 +94,7 @@ struct ContainerView: View {
             }
         }
     }
+    
     
     // Helper function to convert hex color code to UIColor
     func hexStringToColor(hex: String) -> UIColor {

@@ -46,6 +46,7 @@ struct ContentView: View {
         
         
         VStack {
+            
             if jsonData == nil {
                 Text("SBOL")
                     .font(.system(size: 150))
@@ -66,6 +67,7 @@ struct ContentView: View {
                         fetchJSONFromAPI()
                     }
                 Button("Cargar desde API") {
+                    loadRecentJSONs()
                     fetchJSONFromAPI()
                 }
                 .frame(width: 360, height: 80)
@@ -92,8 +94,9 @@ struct ContentView: View {
                         .padding()
                 }
                 Button("Cargar último contenedor") {
-                    loadRecentJSONs()   
+                    loadRecentJSONs()
                     print("Recent JSONs: \(recentJSONs.count)")
+                    jsonData = recentJSONs.last
                     loadAndRenderFromJSON(content: nil)
                 }
                 .frame(width: 360, height: 80)
@@ -159,9 +162,9 @@ struct ContentView: View {
                 }
                 
                 // Old 3D Container Display
-                
+
                 RealityView { content in
-                    loadAndRenderFromJSON(content: content)  // Render container
+                    loadAndRenderFromJSON(content: nil) // Render container
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
@@ -261,6 +264,9 @@ struct ContentView: View {
     func addToRecentJSONs(_ json: Data) {
         if recentJSONs.count >= 20 {
             recentJSONs.removeFirst() // Remove the oldest JSON if buffer exceeds 20
+        }
+        if json == recentJSONs.last {
+            return // Avoid adding duplicates
         }
         recentJSONs.append(json)
         saveRecentJSONs()
