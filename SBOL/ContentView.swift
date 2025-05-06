@@ -25,7 +25,7 @@ struct ContentView: View {
     @State private var errorMessage: String?
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
-    
+        
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
     
@@ -148,6 +148,8 @@ struct ContentView: View {
                         }
                     
                     Spacer()
+                    Text("Agregar tabla aquí")
+                    Spacer()
                     
                     Button("Volver") {
                         resetView()
@@ -160,10 +162,10 @@ struct ContentView: View {
                 //.cornerRadius(10)
                 //.padding()
 
-//                RealityView { content in
-//                    loadAndRenderFromJSON(content: nil) // Render container
-//                }
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                RealityView { content in
+                    loadAndRenderFromJSON(content: nil) // Render container
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 
             }
@@ -262,7 +264,7 @@ struct ContentView: View {
         if recentJSONs.count >= 20 {
             recentJSONs.removeFirst() // Remove the oldest JSON if buffer exceeds 20
         }
-        if json == recentJSONs.last {
+        if recentJSONs.contains(json) {
             return // Avoid adding duplicates
         }
         recentJSONs.append(json)
