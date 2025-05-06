@@ -124,7 +124,8 @@ struct ContentView: View {
             } else {
                 // UI after JSON is loaded
                 // Left Panel with Container Details
-                VStack(alignment: .leading) {
+                VStack {
+                    Spacer()
                     Text("Detalles del contenedor")
                         .font(.title)
                         .bold()
@@ -153,15 +154,16 @@ struct ContentView: View {
                     }
                     .padding()
                 }
-                .frame(width: 300)
-                .background(Color.gray.opacity(0.2)) // Light gray background
-                .cornerRadius(10)
-                .padding()
+                
+                //.frame(width: 300)
+                //.background(Color.gray.opacity(0.2)) // Light gray background
+                //.cornerRadius(10)
+                //.padding()
 
-                RealityView { content in
-                    loadAndRenderFromJSON(content: nil) // Render container
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                RealityView { content in
+//                    loadAndRenderFromJSON(content: nil) // Render container
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 
             }
