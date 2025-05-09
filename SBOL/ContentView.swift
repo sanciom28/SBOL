@@ -48,6 +48,7 @@ struct ContentView: View {
         VStack {
             
             if jsonData == nil {
+                
                 Text("SBOL")
                     .font(.system(size: 150))
                     .fontDesign(.monospaced)
@@ -125,7 +126,6 @@ struct ContentView: View {
                 // UI after JSON is loaded
                 // Left Panel with Container Details
                 VStack {
-                    Spacer()
                     Text("Detalles del contenedor")
                         .font(.title)
                         .bold()
@@ -147,12 +147,11 @@ struct ContentView: View {
                             }
                         }
                     
-                    Spacer()
-                    Text("Agregar tabla aquí")
-                    Spacer()
-                    
                     Button("Volver") {
                         resetView()
+                    }
+                    .onDisappear {
+                        model.secondaryVolumeIsShowing = false
                     }
                     .padding()
                 }
@@ -162,22 +161,23 @@ struct ContentView: View {
                 //.cornerRadius(10)
                 //.padding()
 
-                RealityView { content in
-                    loadAndRenderFromJSON(content: nil) // Render container
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                RealityView { content in
+//                    loadAndRenderFromJSON(content: nil) // Render container
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
                 
                 
             }
             
         }
-        
-        
+
         .sheet(isPresented: $showDocumentPicker) {
             DocumentPickerView(jsonData: $jsonData)
         }
         
     }
+    
     
     func fetchJSONFromAPI() {
         guard let shipmentNumber = Int(shipmentID) else {
@@ -298,7 +298,7 @@ struct ContentView: View {
         containers.removeAll()
         currentContainerIndex = 0
         boxCount = 0
-        dismissWindow(id: "ContainerView")
+        model.secondaryVolumeIsShowing = false
     }
     
     // Helper function to convert hex color code to UIColor

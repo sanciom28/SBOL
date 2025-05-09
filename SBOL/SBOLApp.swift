@@ -9,9 +9,7 @@ import SwiftUI
 
 @main
 struct SBOLApp: App {
-    
-    @State private var appModel = AppModel()
-    
+        
     @State private var model = ViewModel()
     
     @StateObject private var containerVM = ContainerViewModel()
