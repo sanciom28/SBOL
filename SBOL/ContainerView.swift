@@ -14,36 +14,41 @@ struct ContainerView: View {
     @State private var containerPosition: SIMD3<Float> = [0, -0.3, 0]
     @State private var angle: Angle = .degrees(0)
     
+    @AppStorage("scaleModifier") var scaleModifier: Int = 10000
+    
     var body: some View {
         if ContainerViewModel.rawJSON.isEmpty {
             Text("Ningún contenedor seleccionado.")
                 .font(.largeTitle)
         } else {
             ZStack(alignment: .bottom) {
-                RealityView { content in
-                    renderJSON(content: content)  // Render container
+                    RealityView { content in
+                        renderJSON(content: content)  // Render container
+                    }
+                    .rotation3DEffect(angle, axis: .y)
+                    .animation(.linear(duration: 18).repeatForever(), value: angle)
+                    .onAppear {
+                        angle = .degrees(359)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .rotation3DEffect(angle, axis: .y)
-                .animation(.linear(duration: 18).repeatForever(), value: angle)
-                .onAppear {
-                    angle = .degrees(359)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-
+            
         }
         
     }
     
     func renderJSON (content: RealityKit.RealityViewContent?) {
         
+        let scale = (1/Float(scaleModifier)) * 100000
+        let boxPadding = (scale / 10000000)
+        
         do {
             if let containers = ContainerViewModel.rawJSON["containers"] as? [[String: Any]],
                let container = containers.first {
                 
-                let containerLength = ((container["container_length"] as? Float ?? 0.0) / 10000) + 0.002
-                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / 10000) + 0.002
-                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / 10000) + 0.002
+                let containerLength = ((container["container_length"] as? Float ?? 0.0) / scale) + boxPadding*2
+                let containerWidth = ((container["container_width"] as? Float ?? 0.0) / scale) + boxPadding*2
+                let containerHeight = ((container["container_height"] as? Float ?? 0.0) / scale) + boxPadding*2
                 
                 let containerMesh = MeshResource.generateBox(size: [containerLength, containerHeight, containerWidth])
                 let containerMaterial = SimpleMaterial(color: .gray.withAlphaComponent(0.25), isMetallic: false)
@@ -61,27 +66,27 @@ struct ContainerView: View {
                             var boxLength: Float = 0.0
                             var boxWidth: Float = 0.0
                             if values[7] == "1" {
-                                boxLength = -0.001 + (Float(values[4]) ?? 0.0) / 10000
-                                boxWidth = -0.001 + (Float(values[3]) ?? 0.0) / 10000
+                                boxLength = -boxPadding + (Float(values[4]) ?? 0.0) / scale
+                                boxWidth = -boxPadding + (Float(values[3]) ?? 0.0) / scale
                             } else {
-                                boxLength = -0.001 + (Float(values[3]) ?? 0.0) / 10000
-                                boxWidth = -0.001 + (Float(values[4]) ?? 0.0) / 10000
+                                boxLength = -boxPadding + (Float(values[3]) ?? 0.0) / scale
+                                boxWidth = -boxPadding + (Float(values[4]) ?? 0.0) / scale
                             }
-                            let boxHeight = -0.001 + (Float(values[5]) ?? 0.0) / 10000
+                            let boxHeight = -boxPadding + (Float(values[5]) ?? 0.0) / scale
                             let boxColor = hexStringToColor(hex: values[6])
-                            let boxX = (Float(values[8]) ?? 0.0) / 10000
+                            let boxX = (Float(values[8]) ?? 0.0) / scale
                             let fixY = values[10].components(separatedBy: "\n")[0]
-                            let boxY = (Float(fixY) ?? 0.0) / 10000
-                            let boxZ = (Float(values[9]) ?? 0.0) / 10000
+                            let boxY = (Float(fixY) ?? 0.0) / scale
+                            let boxZ = (Float(values[9]) ?? 0.0) / scale
                             
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
                             let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
                             let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
                                                         
                             let adjustedBoxPosition = SIMD3<Float>(
-                                boxX - (containerLength / 2) + (boxLength / 2) + 0.001,
-                                boxY - (containerHeight / 2) + (boxHeight / 2) + 0.001,
-                                boxZ - (containerWidth / 2) + (boxWidth / 2) + 0.001
+                                boxX - (containerLength / 2) + (boxLength / 2) + boxPadding,
+                                boxY - (containerHeight / 2) + (boxHeight / 2) + boxPadding,
+                                boxZ - (containerWidth / 2) + (boxWidth / 2) + boxPadding
                             )
                             
                             boxEntity.position = adjustedBoxPosition
@@ -90,7 +95,6 @@ struct ContainerView: View {
                         }
                     }
                 }
-                
             }
         }
     }

@@ -32,6 +32,7 @@ struct ContentView: View {
     @Environment(ViewModel.self) var model
     
     @State private var recentJSONs: [Data] = [] // Buffer for recent JSONs
+    @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     
     // Struct for table purposes
     struct BoxInfo {
@@ -206,7 +207,7 @@ struct ContentView: View {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization") //TODO: this is unsecure. encrypt
+        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -261,8 +262,8 @@ struct ContentView: View {
     }
     
     func addToRecentJSONs(_ json: Data) {
-        if recentJSONs.count >= 20 {
-            recentJSONs.removeFirst() // Remove the oldest JSON if buffer exceeds 20
+        if recentJSONs.count >= maxStoredContainers {
+            recentJSONs.removeFirst()
         }
         if recentJSONs.contains(json) {
             return // Avoid adding duplicates

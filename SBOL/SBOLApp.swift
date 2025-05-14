@@ -20,7 +20,7 @@ struct SBOLApp: App {
             ContentView()
                 .environment(model)
                 .environmentObject(containerVM)
-        }.defaultSize(CGSize(width: 1100, height: 750))
+        }//.defaultSize(CGSize(width: 1100, height: 750))
         
         
         WindowGroup (id: "ContainerView") {
@@ -41,6 +41,6 @@ struct SBOLApp: App {
         WindowGroup (id: "SettingsView") {
             SettingsView()
                 .environment(model)
-        }.defaultSize(CGSize(width: 500, height: 500))
+        }.defaultSize(CGSize(width: 600, height: 600))
     }
 }
