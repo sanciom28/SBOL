@@ -12,6 +12,7 @@ struct SettingsView: View {
     
     @AppStorage("scaleModifier") var scaleModifier: Int = 10
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
+    @EnvironmentObject var sharedViewModel: RecentJSONsViewModel
     
     var body: some View {
         VStack {
@@ -44,20 +45,17 @@ struct SettingsView: View {
                 .padding(.top, -10)
 
             
-            Button("Restore default") {
+            Button("Restaurar valores por defecto") {
                 print("Scale value before restoring: \(scaleModifier)")
                 print("Max buffer value before restoring: \(maxStoredContainers)")
                 scaleModifier = 10
                 maxStoredContainers = 20
             }
-
-            Text("Configurar cantidad de contenedores guardados en búfer")
-                .font(.body)
-                .padding()
-
-            Text("Borrar historial de contenedores")
-                .font(.body)
-                .padding()
+            
+            Button("Borrar historial de contenedores") {
+                sharedViewModel.clearRecentJSONs()
+                print(sharedViewModel.recentJSONs)
+            }
             
             Spacer()
            
