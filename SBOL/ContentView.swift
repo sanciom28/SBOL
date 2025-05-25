@@ -21,7 +21,6 @@ struct ContentView: View {
     @State private var boxCount: Int = 0
     @State private var boxData: [Int: BoxInfo] = [:] // Dictionary with boxID as key
     @State private var shipmentID: String = ""
-    @State private var containersAPI: [Container] = []
     @State private var errorMessage: String?
     @State private var ajustes: Bool = false
     
@@ -57,24 +56,27 @@ struct ContentView: View {
             if jsonData == nil {
                 if ajustes {
                     Text("Congifuración")
-                        .font(.largeTitle)
+                        .font(.system(size: 28))
                         .bold()
-                        .padding()
+                        .padding(.bottom, 60)
                     Text("Escala del contenedor")
                         .font(.headline)
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
                         set: { scaleModifier = Int($0) }
                     ), in: 1...100, step: 1)
+                    .frame(width: 500)
                     .padding()
                     Text("\(scaleModifier)%")
                         .padding(.top, -10)
                     
                     Text("Cantidad de contenedores guardados en historial")
+                        .font(.headline)
                     Slider(value: Binding(
                         get: { Double(maxStoredContainers) },
                         set: { maxStoredContainers = Int($0) }
                     ), in: 1...100, step: 1)
+                    .frame(width: 500)
                     .padding()
                     Text("\(maxStoredContainers) contenedores")
                         .padding(.top, -10)
@@ -83,7 +85,7 @@ struct ContentView: View {
                         print("Max buffer value before restoring: \(maxStoredContainers)")
                         scaleModifier = 10
                         maxStoredContainers = 20
-                    }.padding(.top, 10)
+                    }.padding(.top, 40)
                     Button("Borrar historial de contenedores") {
                         print(sharedViewModel.recentJSONs)
                         deleteRecentJSONs()
@@ -97,7 +99,7 @@ struct ContentView: View {
                     Text("Spatial Bill of Lading")
                         .font(.system(size: 28))
                         .italic()
-                        .padding(.bottom, 80)
+                        .padding(.bottom, 60)
                     Text("Introduzca ID del contenedor:")
                         .font(.headline)
                     TextField("ID del contenedor", text: $shipmentID)
@@ -139,7 +141,6 @@ struct ContentView: View {
                             return
                         }
                         jsonData = sharedViewModel.recentJSONs.last
-                        loadAndRenderFromJSON(content: nil)
                     }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
@@ -180,35 +181,52 @@ struct ContentView: View {
                         .bold()
                         .padding(.bottom, 10)
                     
-                    Text("ID del Envío: \(shipmentID)")
-                        .font(.headline)
-                    
-                    Text("Num. total de contenedores: \(containerCount)")
-                    Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
-                    Text("Num. total de cajas: \(boxCount)")
-                    Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
-                        .toggleStyle(.button)
-                        .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                            if isShowing {
-                                openWindow(id: "ContainerView")
-                            } else {
-                                dismissWindow(id: "ContainerView")
+                    HStack {
+                        Button(action: {
+                            //
+                        }) {
+                            Image(systemName: "arrow.left")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                        }
+                        VStack {
+                            if shipmentID != "" {
+                                Text("ID del Envío: \(shipmentID)")
+                            }
+                            Text("Num. total de contenedores: \(containerCount)")
+                            Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
+                            Text("Num. total de cajas: \(boxCount)")
+                            Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
+                                .toggleStyle(.button)
+                                .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                    if isShowing {
+                                        openWindow(id: "ContainerView")
+                                    } else {
+                                        dismissWindow(id: "ContainerView")
+                                    }
+                                }
+                            List(boxData.sorted(by: { $0.key < $1.key }), id: \.key) { boxID, boxInfo in
+                                HStack {
+                                    Text("ID: \(boxID)")
+                                        .font(.headline)
+                                    Spacer()
+                                    VStack(alignment: .leading) {
+                                        Text("Count: \(boxInfo.count)")
+                                        Text("Color: \(boxInfo.color.description)")
+                                        Text("Dimensions: \(boxInfo.dimensions.x) x \(boxInfo.dimensions.y) x \(boxInfo.dimensions.z)")
+                                    }
+                                }
+                                .padding()
                             }
                         }
-                    List(boxData.sorted(by: { $0.key < $1.key }), id: \.key) { boxID, boxInfo in
-                        HStack {
-                            Text("ID: \(boxID)")
-                                .font(.headline)
-                            Spacer()
-                            VStack(alignment: .leading) {
-                                Text("Count: \(boxInfo.count)")
-                                Text("Color: \(boxInfo.color.description)")
-                                Text("Dimensions: \(boxInfo.dimensions.x) x \(boxInfo.dimensions.y) x \(boxInfo.dimensions.z)")
-                            }
+                        Button(action: {
+                            // Handle action
+                        }) {
+                            Image(systemName: "arrow.right")
+                                .resizable()
+                                .frame(width: 40, height: 40)
                         }
-                        .padding()
                     }
-                    
                     Button("Volver") {
                         resetView()
                     }
@@ -246,7 +264,6 @@ struct ContentView: View {
             errorMessage = "ID de envío inválido"
             return
         }
-        
         let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
         let requestBody: [String: Any] = [
             "qpm_calcdb": "qpm_calcdb",
@@ -313,6 +330,14 @@ struct ContentView: View {
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
                 
+                boxCount = jsonObject["total_boxes"] as? Int ?? 0
+                
+                let shipID = jsonObject["shipment"] as? Int ?? 0
+                print("ship ID: \(shipID)")
+                if shipID != 0 {
+                    shipmentID = String(shipID)
+                }
+                
                 containerCount = containers.count
                 
                 if (container["locations"] != nil) {
@@ -331,6 +356,7 @@ struct ContentView: View {
             sharedViewModel.recentJSONs.removeFirst()
         }
         if sharedViewModel.recentJSONs.contains(json) {
+            print("Duplicate JSON found, not adding to recent JSONs.")
             return // Avoid adding duplicates
         }
         sharedViewModel.recentJSONs.append(json)
