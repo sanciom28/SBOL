@@ -330,6 +330,8 @@ struct ContentView: View {
                let containers = jsonObject["containers"] as? [[String: Any]],
                let container = containers.first {
                 
+                let currentContainer = containers[currentContainerIndex]
+
                 boxCount = jsonObject["total_boxes"] as? Int ?? 0
                 
                 let shipID = jsonObject["shipment"] as? Int ?? 0
@@ -340,8 +342,7 @@ struct ContentView: View {
                 
                 containerCount = containers.count
                 
-                if (container["locations"] != nil) {
-                    
+                if (currentContainer["locations"] != nil) {
                     containerViewModel.addRawJSON(json: jsonObject)
                 }
                 

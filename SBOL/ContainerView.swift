@@ -22,16 +22,16 @@ struct ContainerView: View {
                 .font(.largeTitle)
         } else {
             ZStack(alignment: .bottom) {
-                    RealityView { content in
-                        renderJSON(content: content)  // Render container
-                    }
-                    .rotation3DEffect(angle, axis: .y)
-                    .animation(.linear(duration: 18).repeatForever(), value: angle)
-                    .onAppear {
-                        angle = .degrees(359)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                RealityView { content in
+                    renderJSON(content: content)  // Render container
                 }
+                .rotation3DEffect(angle, axis: .y)
+                .animation(.linear(duration: 18).repeatForever(), value: angle)
+                .onAppear {
+                    angle = .degrees(359)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
             
         }
         
@@ -82,7 +82,7 @@ struct ContainerView: View {
                             let boxMesh = MeshResource.generateBox(size: [boxLength, boxHeight, boxWidth])
                             let boxMaterial = SimpleMaterial(color: boxColor, isMetallic: false)
                             let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-                                                        
+                            
                             let adjustedBoxPosition = SIMD3<Float>(
                                 boxX - (containerLength / 2) + (boxLength / 2) + boxPadding,
                                 boxY - (containerHeight / 2) + (boxHeight / 2) + boxPadding,
