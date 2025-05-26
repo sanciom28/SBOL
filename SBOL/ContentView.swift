@@ -183,7 +183,10 @@ struct ContentView: View {
                     
                     HStack {
                         Button(action: {
-                            //
+                            if currentContainerIndex > 0 {
+                                currentContainerIndex-=1
+                                loadAndRenderFromJSON(content: nil) // Render container
+                            }
                         }) {
                             Image(systemName: "arrow.left")
                                 .resizable()
@@ -220,7 +223,10 @@ struct ContentView: View {
                             }
                         }
                         Button(action: {
-                            // Handle action
+                            if currentContainerIndex < containerCount-1 {
+                                currentContainerIndex+=1
+                                loadAndRenderFromJSON(content: nil) // Render container
+                            }
                         }) {
                             Image(systemName: "arrow.right")
                                 .resizable()
@@ -327,9 +333,8 @@ struct ContentView: View {
         
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-               let containers = jsonObject["containers"] as? [[String: Any]],
-               let container = containers.first {
-                
+               let containers = jsonObject["containers"] as? [[String: Any]] {
+                                
                 let currentContainer = containers[currentContainerIndex]
 
                 boxCount = jsonObject["total_boxes"] as? Int ?? 0
@@ -343,7 +348,7 @@ struct ContentView: View {
                 containerCount = containers.count
                 
                 if (currentContainer["locations"] != nil) {
-                    containerViewModel.addRawJSON(json: jsonObject)
+                    containerViewModel.addRawJSON(json: currentContainer)
                 }
                 
             }

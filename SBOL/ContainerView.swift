@@ -43,8 +43,11 @@ struct ContainerView: View {
         let boxPadding = (scale / 10000000)
         
         do {
-            if let containers = ContainerViewModel.rawJSON["containers"] as? [[String: Any]],
-               let container = containers.first {
+               
+            let container = ContainerViewModel.rawJSON
+            
+//            if let containers = ContainerViewModel.rawJSON["containers"] as? [[String: Any]],
+//               let container = containers.first {
                 
                 let containerLength = ((container["container_length"] as? Float ?? 0.0) / scale) + boxPadding*2
                 let containerWidth = ((container["container_width"] as? Float ?? 0.0) / scale) + boxPadding*2
@@ -122,7 +125,7 @@ struct ContainerView: View {
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
     
-}
+
 
 //    @Environment(\.dismissWindow) private var dismissWindow
 
