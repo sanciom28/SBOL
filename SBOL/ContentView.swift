@@ -23,6 +23,7 @@ struct ContentView: View {
     @State private var shipmentID: String = ""
     @State private var errorMessage: String?
     @State private var ajustes: Bool = false
+    @State private var volumeEfficiency: Double = 0.0
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
     
@@ -174,74 +175,66 @@ struct ContentView: View {
                 //                    }
             } else {
                 // UI after JSON is loaded
-                // Left Panel with Container Details
-                VStack {
-                    Text("Detalles del contenedor")
-                        .font(.title)
-                        .bold()
-                        .padding(.bottom, 10)
-                    
-                    HStack {
+                HStack {
+                    if currentContainerIndex > 0 {
                         Button(action: {
-                            if currentContainerIndex > 0 {
-                                currentContainerIndex-=1
-                                loadAndRenderFromJSON(content: nil) // Render container
-                            }
+                            currentContainerIndex-=1
+                            model.secondaryVolumeIsShowing = false
+                            loadAndRenderFromJSON(content: nil) // Render container
+                            
                         }) {
                             Image(systemName: "arrow.left")
                                 .resizable()
-                                .frame(width: 40, height: 40)
-                        }
-                        VStack {
-                            if shipmentID != "" {
-                                Text("ID del Envío: \(shipmentID)")
-                            }
-                            Text("Num. total de contenedores: \(containerCount)")
-                            Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
-                            Text("Num. total de cajas: \(boxCount)")
-                            Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
-                                .toggleStyle(.button)
-                                .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                                    if isShowing {
-                                        openWindow(id: "ContainerView")
-                                    } else {
-                                        dismissWindow(id: "ContainerView")
-                                    }
+                                .frame(width: 30, height: 30)
+                        }.padding(.leading, 10)
+                    }
+                    VStack {
+                        Text("Detalles del contenedor")
+                            .font(.title)
+                            .bold()
+                            .padding()
+                        
+                            VStack {
+                                if shipmentID != "" {
+                                    Text("ID del Envío: \(shipmentID)")
                                 }
-                            List(boxData.sorted(by: { $0.key < $1.key }), id: \.key) { boxID, boxInfo in
-                                HStack {
-                                    Text("ID: \(boxID)")
-                                        .font(.headline)
-                                    Spacer()
-                                    VStack(alignment: .leading) {
-                                        Text("Count: \(boxInfo.count)")
-                                        Text("Color: \(boxInfo.color.description)")
-                                        Text("Dimensions: \(boxInfo.dimensions.x) x \(boxInfo.dimensions.y) x \(boxInfo.dimensions.z)")
-                                    }
-                                }
-                                .padding()
+                                Text("Num. total de contenedores: \(containerCount)")
+                                Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
+                                Text("Num. total de cajas: \(boxCount)")
+                                Text("Eficiencia de llenado por volumen: \(String(format: "%.2f", volumeEfficiency))%")
+                                
+                                Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
+                                    .toggleStyle(.button)
+                                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                        if isShowing {
+                                            openWindow(id: "ContainerView")
+                                        } else {
+                                            dismissWindow(id: "ContainerView")
+                                        }
+                                    }.padding()
                             }
-                        }
+                            
+                        Button("Volver") {
+                            resetView()
+                        }.padding()
+                    }
+                    
+                    if currentContainerIndex < containerCount-1 {
+                        
                         Button(action: {
-                            if currentContainerIndex < containerCount-1 {
-                                currentContainerIndex+=1
-                                loadAndRenderFromJSON(content: nil) // Render container
-                            }
+                            currentContainerIndex+=1
+                            model.secondaryVolumeIsShowing = false
+                            loadAndRenderFromJSON(content: nil) // Render container
+                            
                         }) {
                             Image(systemName: "arrow.right")
                                 .resizable()
-                                .frame(width: 40, height: 40)
-                        }
+                                .frame(width: 30, height: 30)
+                        }.padding(.trailing, 10)
+                    } else {
+                        //
                     }
-                    Button("Volver") {
-                        resetView()
-                    }
-                    .onDisappear {
-                        model.secondaryVolumeIsShowing = false
-                    }
-                    .padding()
                 }
-                
                 //.frame(width: 300)
                 //.background(Color.gray.opacity(0.2)) // Light gray background
                 //.cornerRadius(10)
@@ -263,8 +256,41 @@ struct ContentView: View {
         }
         
     }
-    
-    
+        
+    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
+        guard var jsonData = jsonData else { return }
+        
+        if let filteredData = filteredJsonData {
+            jsonData = filteredData
+        }
+        
+        do {
+            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+               let containers = jsonObject["containers"] as? [[String: Any]] {
+                                
+                let currentContainer = containers[currentContainerIndex]
+
+                boxCount = jsonObject["total_boxes"] as? Int ?? 0
+                volumeEfficiency = (currentContainer["cont_volef"] as? Double ?? 0.0) * 100
+                
+                let shipID = jsonObject["shipment"] as? Int ?? 0
+                print("ship ID: \(shipID)")
+                if shipID != 0 {
+                    shipmentID = String(shipID)
+                }
+                
+                containerCount = containers.count
+                
+                if (currentContainer["locations"] != nil) {
+                    containerViewModel.addRawJSON(json: currentContainer)
+                }
+                
+            }
+        } catch {
+            errorMessage = "Error loading JSON: \(error.localizedDescription)"
+        }
+    }
+
     func fetchJSONFromAPI() {
         guard let shipmentNumber = Int(shipmentID) else {
             errorMessage = "ID de envío inválido"
@@ -324,39 +350,6 @@ struct ContentView: View {
         
     }
     
-    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
-        guard var jsonData = jsonData else { return }
-        
-        if let filteredData = filteredJsonData {
-            jsonData = filteredData
-        }
-        
-        do {
-            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
-               let containers = jsonObject["containers"] as? [[String: Any]] {
-                                
-                let currentContainer = containers[currentContainerIndex]
-
-                boxCount = jsonObject["total_boxes"] as? Int ?? 0
-                
-                let shipID = jsonObject["shipment"] as? Int ?? 0
-                print("ship ID: \(shipID)")
-                if shipID != 0 {
-                    shipmentID = String(shipID)
-                }
-                
-                containerCount = containers.count
-                
-                if (currentContainer["locations"] != nil) {
-                    containerViewModel.addRawJSON(json: currentContainer)
-                }
-                
-            }
-        } catch {
-            errorMessage = "Error loading JSON: \(error.localizedDescription)"
-        }
-    }
-    
     func addToRecentJSONs(_ json: Data) {
         if sharedViewModel.recentJSONs.count >= maxStoredContainers {
             sharedViewModel.recentJSONs.removeFirst()
@@ -392,6 +385,7 @@ struct ContentView: View {
     
     // Reset view to ask for JSON again
     func resetView() {
+        dismissWindow(id: "ContainerView")
         shipmentID = ""
         jsonData = nil
         filteredJsonData = nil
@@ -399,6 +393,7 @@ struct ContentView: View {
         containers.removeAll()
         currentContainerIndex = 0
         boxCount = 0
+        volumeEfficiency = 0.0
         model.secondaryVolumeIsShowing = false
     }
     
