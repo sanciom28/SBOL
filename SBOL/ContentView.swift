@@ -106,7 +106,7 @@ struct ContentView: View {
                     TextField("ID del contenedor", text: $shipmentID)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.numberPad)
-                        .frame(width: 500)
+                        .frame(maxWidth: 500)
                         .padding()
                         .onSubmit {
                             fetchJSONFromAPI()
@@ -175,25 +175,26 @@ struct ContentView: View {
                 //                    }
             } else {
                 // UI after JSON is loaded
-                HStack {
-                    if currentContainerIndex > 0 {
-                        Button(action: {
-                            currentContainerIndex-=1
-                            model.secondaryVolumeIsShowing = false
-                            loadAndRenderFromJSON(content: nil) // Render container
+                ZStack {
+                    HStack {
+                        if currentContainerIndex > 0 {
+                            Button(action: {
+                                currentContainerIndex-=1
+                                model.secondaryVolumeIsShowing = false
+                                loadAndRenderFromJSON(content: nil) // Render container
+                                
+                            }) {
+                                Image(systemName: "arrow.left")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                            }.padding(.leading, 10)
+                        }
+                        VStack {
+                            Text("Detalles del contenedor")
+                                .font(.title)
+                                .bold()
+                                .padding()
                             
-                        }) {
-                            Image(systemName: "arrow.left")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                        }.padding(.leading, 10)
-                    }
-                    VStack {
-                        Text("Detalles del contenedor")
-                            .font(.title)
-                            .bold()
-                            .padding()
-                        
                             VStack {
                                 if shipmentID != "" {
                                     Text("ID del Envío: \(shipmentID)")
@@ -214,40 +215,42 @@ struct ContentView: View {
                                     }.padding()
                             }
                             
-                        Button("Volver") {
-                            resetView()
-                        }.padding()
+                            Button("Volver") {
+                                resetView()
+                            }.padding()
+                        }
+                        
+                        if currentContainerIndex < containerCount-1 {
+                            
+                            Button(action: {
+                                currentContainerIndex+=1
+                                model.secondaryVolumeIsShowing = false
+                                loadAndRenderFromJSON(content: nil) // Render container
+                                
+                            }) {
+                                Image(systemName: "arrow.right")
+                                    .resizable()
+                                    .frame(width: 30, height: 30)
+                            }.padding(.trailing, 10)
+                        } else {
+                            //
+                        }
+                        
+                        //.frame(width: 300)
+                        //.background(Color.gray.opacity(0.2)) // Light gray background
+                        //.cornerRadius(10)
+                        //.padding()
+                        
                     }
                     
-                    if currentContainerIndex < containerCount-1 {
-                        
-                        Button(action: {
-                            currentContainerIndex+=1
-                            model.secondaryVolumeIsShowing = false
-                            loadAndRenderFromJSON(content: nil) // Render container
-                            
-                        }) {
-                            Image(systemName: "arrow.right")
-                                .resizable()
-                                .frame(width: 30, height: 30)
-                        }.padding(.trailing, 10)
-                    } else {
-                        //
+                    RealityView { content in
+                        loadAndRenderFromJSON(content: nil) // Render container
                     }
+                    //                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                //.frame(width: 300)
-                //.background(Color.gray.opacity(0.2)) // Light gray background
-                //.cornerRadius(10)
-                //.padding()
-                
-                RealityView { content in
-                    loadAndRenderFromJSON(content: nil) // Render container
-                }
-                //                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                
-                
             }
+                
+            
             
         }
         
