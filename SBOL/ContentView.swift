@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var errorMessage: String?
     @State private var ajustes: Bool = false
     @State private var volumeEfficiency: Double = 0.0
+    @State private var historyIndex: Int = 0
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
     
@@ -133,7 +134,6 @@ struct ContentView: View {
                             fetchJSONFromAPI()
                         }
                     Button("Cargar desde API") {
-                        //loadRecentJSONs()
                         fetchJSONFromAPI()
                     }
                     .frame(width: 360, height: 80)
@@ -149,12 +149,11 @@ struct ContentView: View {
                     
                     Button("Cargar último contenedor") {
                         loadRecentJSONs()
-                        print("Recent JSONs: \(sharedViewModel.recentJSONs.count)")
                         if sharedViewModel.recentJSONs.isEmpty {
                             errorMessage = "No hay contenedores recientes"
                             return
                         }
-                        jsonData = sharedViewModel.recentJSONs.last
+                        
                     }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
@@ -173,7 +172,7 @@ struct ContentView: View {
                 if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
-                        .padding()
+                        .padding(.bottom)
                 }
             } else {
                 // UI after JSON is loaded
@@ -381,6 +380,7 @@ struct ContentView: View {
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
             sharedViewModel.recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
             print("Historial: \(sharedViewModel.recentJSONs.count)")
+            jsonData = sharedViewModel.recentJSONs.reversed()[historyIndex]
         }
     }
     
