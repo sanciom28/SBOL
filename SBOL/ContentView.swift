@@ -66,16 +66,13 @@ struct ContentView: View {
                         set: { scaleModifier = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
-                    Text("\(scaleModifier)%")
-                        .padding(.bottom, 20)
-                    Text("Cantidad de contenedores guardados en historial")
-                    Slider(value: Binding(
-                        get: { Double(maxStoredContainers) },
-                        set: { maxStoredContainers = Int($0) }
-                    ), in: 1...100, step: 1)
-                    .frame(width: 500)
-                    Text("\(maxStoredContainers) contenedores")
-                        .padding(.bottom, 20)
+                    if scaleModifier == 100 {
+                        Text("Tamaño real")
+                            .padding(.bottom, 20)
+                    } else {
+                        Text("\(scaleModifier)% del tamaño real")
+                            .padding(.bottom, 20)
+                    }
                     Text("Velocidad de rotación de contenedor")
                     Slider(value: Binding(
                         get: { Double(rotationSpeed) },
@@ -87,6 +84,19 @@ struct ContentView: View {
                             .padding(.bottom, 20)
                     } else {
                         Text("\(Int(rotationSpeed)) rotaciones por minuto")
+                            .padding(.bottom, 20)
+                    }
+                    Text("Cantidad de contenedores guardados en historial")
+                    Slider(value: Binding(
+                        get: { Double(maxStoredContainers) },
+                        set: { maxStoredContainers = Int($0) }
+                    ), in: 1...100, step: 1)
+                    .frame(width: 500)
+                    if maxStoredContainers == 1 {
+                        Text("1 contenedor")
+                            .padding(.bottom, 20)
+                    } else {
+                        Text("\(maxStoredContainers) contenedores")
                             .padding(.bottom, 20)
                     }
                     Button("Restaurar valores por defecto") {
@@ -352,9 +362,9 @@ struct ContentView: View {
         if sharedViewModel.recentJSONs.count >= maxStoredContainers {
             sharedViewModel.recentJSONs.removeFirst()
         }
-        if sharedViewModel.recentJSONs.contains(json) {
+        if sharedViewModel.recentJSONs.last == json {
             print("Duplicate JSON found, not adding to recent JSONs.")
-            return // Avoid adding duplicates
+            return // Avoid adding duplicates back to back
         }
         sharedViewModel.recentJSONs.append(json)
         saveRecentJSONs()
@@ -370,7 +380,6 @@ struct ContentView: View {
     func loadRecentJSONs() {
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
             sharedViewModel.recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
-            print("OG Historial: \(jsonStrings)")
             print("Historial: \(sharedViewModel.recentJSONs.count)")
         }
     }

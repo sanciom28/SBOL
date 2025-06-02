@@ -126,31 +126,3 @@ struct ContainerView: View {
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
     
-
-
-//    @Environment(\.dismissWindow) private var dismissWindow
-
-//    var body: some View {
-//           NavigationSplitView {
-//               VStack {
-//                   Button(action: {
-//                       dismissWindow(id: "ContainerView")
-//                   }) {
-//                       Text("Dismiss container Window")
-//                           .font(.headline)
-//                           .padding()
-//                           .background(Color.blue)
-//                           .foregroundColor(.white)
-//                           .cornerRadius(10)
-//                   }
-//                   .buttonStyle(.plain)
-//               }
-//               .frame(maxWidth: .infinity, alignment: .top)
-//               .navigationTitle("Sidebar")
-//           } detail: {
-//               Text("Detail")
-//           }
-//
-//       }
-
-
