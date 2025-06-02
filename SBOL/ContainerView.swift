@@ -15,6 +15,7 @@ struct ContainerView: View {
     @State private var angle: Angle = .degrees(0)
     
     @AppStorage("scaleModifier") var scaleModifier: Int = 10000
+    @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     
     var body: some View {
         if ContainerViewModel.rawJSON.isEmpty {
@@ -26,9 +27,9 @@ struct ContainerView: View {
                     renderJSON(content: content)  // Render container
                 }
                 .rotation3DEffect(angle, axis: .y)
-                .animation(.linear(duration: 18).repeatForever(), value: angle)
+                .animation(.linear(duration: (60/rotationSpeed)*100).repeatForever(), value: angle)
                 .onAppear {
-                    angle = .degrees(359)
+                    angle = .degrees(35999)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }

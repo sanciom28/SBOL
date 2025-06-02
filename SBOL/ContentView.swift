@@ -35,7 +35,7 @@ struct ContentView: View {
     @EnvironmentObject var sharedViewModel: RecentJSONsViewModel
     
     @AppStorage("scaleModifier") var scaleModifier: Int = 10
-    //@State private var recentJSONs: [Data] = [] // Buffer for recent JSONs
+    @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     
     @State private var filteredJsonData: Data? = nil
@@ -59,7 +59,7 @@ struct ContentView: View {
                     Text("Congifuración")
                         .font(.system(size: 28))
                         .bold()
-                        .padding(.bottom, 60)
+                        .padding(.bottom, 50)
                     Text("Escala del contenedor")
                         .font(.headline)
                     Slider(value: Binding(
@@ -67,10 +67,8 @@ struct ContentView: View {
                         set: { scaleModifier = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
-                    .padding()
                     Text("\(scaleModifier)%")
-                        .padding(.top, -10)
-                    
+                        .padding(.bottom, 10)
                     Text("Cantidad de contenedores guardados en historial")
                         .font(.headline)
                     Slider(value: Binding(
@@ -78,14 +76,29 @@ struct ContentView: View {
                         set: { maxStoredContainers = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
-                    .padding()
                     Text("\(maxStoredContainers) contenedores")
-                        .padding(.top, -10)
+                        .padding(.bottom, 10)
+                    Text("Velocidad de rotación de contenedor")
+                        .font(.headline)
+                    Slider(value: Binding(
+                        get: { Double(rotationSpeed) },
+                        set: { rotationSpeed = Double($0) }
+                    ), in: 0...10, step: 1)
+                    .frame(width: 500)
+                    if rotationSpeed == 0 {
+                        Text("Rotación desactivada")
+                            .padding(.bottom, 10)
+                    } else {
+                        Text("\(Int(rotationSpeed)) rotaciones por minuto")
+                            .padding(.bottom, 10)
+                    }
                     Button("Restaurar valores por defecto") {
                         print("Scale value before restoring: \(scaleModifier)")
                         print("Max buffer value before restoring: \(maxStoredContainers)")
+                        print("Rotation speed before restoring: \(rotationSpeed)")
                         scaleModifier = 10
                         maxStoredContainers = 20
+                        rotationSpeed = 3.0
                     }.padding(.top, 40)
                     Button("Borrar historial de contenedores") {
                         print(sharedViewModel.recentJSONs)
@@ -164,15 +177,6 @@ struct ContentView: View {
                         .foregroundColor(.red)
                         .padding()
                 }
-                //                Toggle("Open the test volume", isOn: $model.secondaryVolumeIsShowing)
-                //                    .toggleStyle(.button)
-                //                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                //                        if isShowing {
-                //                            openWindow(id: "secondaryVolume")
-                //                        } else {
-                //                            dismissWindow(id: "secondaryVolume")
-                //                        }
-                //                    }
             } else {
                 // UI after JSON is loaded
                 ZStack {
@@ -189,21 +193,21 @@ struct ContentView: View {
                                     .frame(width: 30, height: 30)
                             }.padding(.leading, 10)
                         }
-                        VStack {
+                        VStack(spacing: 4) {
                             Text("Detalles del contenedor")
                                 .font(.title)
                                 .bold()
                                 .padding()
                             
-                            VStack {
+                            VStack(alignment: .leading) {
                                 if shipmentID != "" {
                                     Text("ID del Envío: \(shipmentID)")
                                 }
                                 Text("Num. total de contenedores: \(containerCount)")
                                 Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
                                 Text("Num. total de cajas: \(boxCount)")
-                                Text("Eficiencia de llenado por volumen: \(String(format: "%.2f", volumeEfficiency))%")
-                                
+                                Text("Eficiencia de llenado: \(String(format: "%.2f", volumeEfficiency))%")
+                            }
                                 Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
                                     .toggleStyle(.button)
                                     .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
@@ -213,12 +217,15 @@ struct ContentView: View {
                                             dismissWindow(id: "ContainerView")
                                         }
                                     }.padding()
-                            }
+                            
+                                
                             
                             Button("Volver") {
                                 resetView()
                             }.padding()
-                        }
+                        }.padding()
+                        .background(Color.white.opacity(0.15))
+                        .cornerRadius(15)
                         
                         if currentContainerIndex < containerCount-1 {
                             
