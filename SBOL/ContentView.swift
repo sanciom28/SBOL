@@ -56,30 +56,27 @@ struct ContentView: View {
             
             if jsonData == nil {
                 if ajustes {
-                    Text("Congifuración")
-                        .font(.system(size: 28))
+                    Text("Configuración")
+                        .font(.system(size: 36))
                         .bold()
                         .padding(.bottom, 50)
                     Text("Escala del contenedor")
-                        .font(.headline)
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
                         set: { scaleModifier = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
                     Text("\(scaleModifier)%")
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 20)
                     Text("Cantidad de contenedores guardados en historial")
-                        .font(.headline)
                     Slider(value: Binding(
                         get: { Double(maxStoredContainers) },
                         set: { maxStoredContainers = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
                     Text("\(maxStoredContainers) contenedores")
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 20)
                     Text("Velocidad de rotación de contenedor")
-                        .font(.headline)
                     Slider(value: Binding(
                         get: { Double(rotationSpeed) },
                         set: { rotationSpeed = Double($0) }
@@ -87,24 +84,25 @@ struct ContentView: View {
                     .frame(width: 500)
                     if rotationSpeed == 0 {
                         Text("Rotación desactivada")
-                            .padding(.bottom, 10)
+                            .padding(.bottom, 20)
                     } else {
                         Text("\(Int(rotationSpeed)) rotaciones por minuto")
-                            .padding(.bottom, 10)
+                            .padding(.bottom, 20)
                     }
                     Button("Restaurar valores por defecto") {
-                        print("Scale value before restoring: \(scaleModifier)")
-                        print("Max buffer value before restoring: \(maxStoredContainers)")
-                        print("Rotation speed before restoring: \(rotationSpeed)")
                         scaleModifier = 10
                         maxStoredContainers = 20
                         rotationSpeed = 3.0
-                    }.padding(.top, 40)
+                    }
+                    .font(.system(size: 22))
+                    .padding(.top, 20)
                     Button("Borrar historial de contenedores") {
                         print(sharedViewModel.recentJSONs)
                         deleteRecentJSONs()
                         print(sharedViewModel.recentJSONs)
-                    }.padding()
+                    }
+                    .font(.system(size: 22))
+                    .padding()
                 } else {
                     Text("SBOL")
                         .font(.system(size: 150))
@@ -138,14 +136,6 @@ struct ContentView: View {
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
                     .padding(.bottom, -10)
-                    //                Button(action: {
-                    //                    openWindow(id: "ContainerView")
-                    //                    print("my container window.")
-                    //                }) {
-                    //                    Text("Ventana mía de prueba")
-                    //                }
-                    //                .frame(width: 360, height: 80)
-                    //                .font(.system(size: 24))
                     
                     Button("Cargar último contenedor") {
                         loadRecentJSONs()
@@ -158,17 +148,15 @@ struct ContentView: View {
                     }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
-                    
-                    
+                    .padding(.bottom, 5)
                 }
                 
                 Button(action: {
                     ajustes.toggle()
                 }) {
-                    Image(systemName: ajustes ? "xmark.circle.fill" : "gearshape.fill")
+                    Image(systemName: ajustes ? "xmark.circle.fill" : "gear")
                         .resizable()
                         .frame(width: 30, height: 30)
-                        
                 }
                 .frame(width: 30, height: 30)
                 
@@ -208,24 +196,24 @@ struct ContentView: View {
                                 Text("Num. total de cajas: \(boxCount)")
                                 Text("Eficiencia de llenado: \(String(format: "%.2f", volumeEfficiency))%")
                             }
-                                Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
-                                    .toggleStyle(.button)
-                                    .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
-                                        if isShowing {
-                                            openWindow(id: "ContainerView")
-                                        } else {
-                                            dismissWindow(id: "ContainerView")
-                                        }
-                                    }.padding()
+                            Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
+                                .toggleStyle(.button)
+                                .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                    if isShowing {
+                                        openWindow(id: "ContainerView")
+                                    } else {
+                                        dismissWindow(id: "ContainerView")
+                                    }
+                                }.padding()
                             
-                                
+                            
                             
                             Button("Volver") {
                                 resetView()
                             }.padding()
                         }.padding()
-                        .background(Color.white.opacity(0.15))
-                        .cornerRadius(15)
+                            .background(Color.white.opacity(0.15))
+                            .cornerRadius(15)
                         
                         if currentContainerIndex < containerCount-1 {
                             
@@ -256,7 +244,7 @@ struct ContentView: View {
                     //                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-                
+            
             
             
         }
@@ -266,7 +254,7 @@ struct ContentView: View {
         }
         
     }
-        
+    
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
         guard var jsonData = jsonData else { return }
         
@@ -277,9 +265,9 @@ struct ContentView: View {
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]] {
-                                
+                
                 let currentContainer = containers[currentContainerIndex]
-
+                
                 boxCount = jsonObject["total_boxes"] as? Int ?? 0
                 volumeEfficiency = (currentContainer["cont_volef"] as? Double ?? 0.0) * 100
                 
@@ -300,7 +288,7 @@ struct ContentView: View {
             errorMessage = "Error loading JSON: \(error.localizedDescription)"
         }
     }
-
+    
     func fetchJSONFromAPI() {
         guard let shipmentNumber = Int(shipmentID) else {
             errorMessage = "ID de envío inválido"

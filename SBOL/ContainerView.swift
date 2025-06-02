@@ -41,7 +41,7 @@ struct ContainerView: View {
     func renderJSON (content: RealityKit.RealityViewContent?) {
         
         let scale = (1/Float(scaleModifier)) * 100000
-        let boxPadding = (scale / 10000000)
+        let boxPadding = 10/scale
         
         do {
                
