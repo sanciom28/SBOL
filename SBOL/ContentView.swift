@@ -41,17 +41,30 @@ struct ContentView: View {
     
     @State private var filteredJsonData: Data? = nil
     
-    // Struct for table purposes
-    struct BoxInfo {
-        var count: Int
-        var color: UIColor
-        var dimensions: SIMD3<Float> // (length, height, width)
-    }
+    @State private var dummyBoxInfo = [
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
+        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)")
+    ]
     
     var body: some View {
         
         @Bindable var model = model
-        
         
         VStack {
             
@@ -143,6 +156,9 @@ struct ContentView: View {
                     Button("Cargar desde archivo") {
                         showDocumentPicker = true
                     }
+                    .sheet(isPresented: $showDocumentPicker) {
+                        DocumentPickerView(jsonData: $jsonData)
+                    }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
                     .padding(.bottom, -10)
@@ -177,19 +193,7 @@ struct ContentView: View {
             } else {
                 // UI after JSON is loaded
                 ZStack {
-                    HStack {
-                        if currentContainerIndex > 0 {
-                            Button(action: {
-                                currentContainerIndex-=1
-                                model.secondaryVolumeIsShowing = false
-                                loadAndRenderFromJSON(content: nil) // Render container
-                                
-                            }) {
-                                Image(systemName: "arrow.left")
-                                    .resizable()
-                                    .frame(width: 30, height: 30)
-                            }.padding(.leading, 10)
-                        }
+                    HStack(alignment: .top) {
                         VStack(spacing: 4) {
                             Text("Detalles del contenedor")
                                 .font(.title)
@@ -204,6 +208,32 @@ struct ContentView: View {
                                 Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
                                 Text("Num. total de cajas: \(boxCount)")
                                 Text("Eficiencia de llenado: \(String(format: "%.2f", volumeEfficiency))%")
+                                    .padding(.bottom, 10)
+                            }
+                            HStack {
+                                Button(action: {
+                                    currentContainerIndex-=1
+                                    model.secondaryVolumeIsShowing = false
+                                    loadAndRenderFromJSON(content: nil) // Render container
+                                    
+                                }) {
+                                    Image(systemName: "arrow.left")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                }.padding()
+                                    .disabled(currentContainerIndex == 0)
+
+                                Button(action: {
+                                    currentContainerIndex+=1
+                                    model.secondaryVolumeIsShowing = false
+                                    loadAndRenderFromJSON(content: nil) // Render container
+                                    
+                                }) {
+                                    Image(systemName: "arrow.right")
+                                        .resizable()
+                                        .frame(width: 30, height: 30)
+                                }.padding()
+                                    .disabled(currentContainerIndex >= containerCount-1)
                             }
                             Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
                                 .toggleStyle(.button)
@@ -214,37 +244,22 @@ struct ContentView: View {
                                         dismissWindow(id: "ContainerView")
                                     }
                                 }.padding()
-                            
-                            
-                            
+
+                            Spacer()
                             Button("Volver") {
                                 resetView()
                             }.padding()
                         }.padding()
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(15)
-                        
-                        if currentContainerIndex < containerCount-1 {
-                            
-                            Button(action: {
-                                currentContainerIndex+=1
-                                model.secondaryVolumeIsShowing = false
-                                loadAndRenderFromJSON(content: nil) // Render container
-                                
-                            }) {
-                                Image(systemName: "arrow.right")
-                                    .resizable()
-                                    .frame(width: 30, height: 30)
-                            }.padding(.trailing, 10)
-                        } else {
-                            //
-                        }
-                        
-                        //.frame(width: 300)
-                        //.background(Color.gray.opacity(0.2)) // Light gray background
-                        //.cornerRadius(10)
-                        //.padding()
-                        
+
+                        Table(dummyBoxInfo) {
+                            TableColumn("ID", value: \.count)
+                            TableColumn("Cantidad", value: \.count)
+                            TableColumn("Color", value: \.color)
+                            TableColumn("Dimensiones (LxHxW)", value: \.dimensions)
+                        }.padding()
+                            .frame(maxHeight: 300)
                     }
                     
                     RealityView { content in
@@ -253,15 +268,7 @@ struct ContentView: View {
                     //                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            
-            
-            
         }
-        
-        .sheet(isPresented: $showDocumentPicker) {
-            DocumentPickerView(jsonData: $jsonData)
-        }
-        
     }
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {

@@ -56,11 +56,6 @@
 			path = SBOL;
 			sourceTree = "<group>";
 		};
-		7B869BB12C83FEFE007BE0C3 /* SBOLTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SBOLTests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +91,6 @@
 			children = (
 				7B869B952C83FEFC007BE0C3 /* SBOL */,
 				7B869B962C83FEFC007BE0C3 /* Packages */,
-				7B869BB12C83FEFE007BE0C3 /* SBOLTests */,
 				7B845D7A2C9A5557001C640E /* Frameworks */,
 				7B869B942C83FEFC007BE0C3 /* Products */,
 			);
@@ -157,9 +151,6 @@
 			);
 			dependencies = (
 				7B869BB02C83FEFE007BE0C3 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				7B869BB12C83FEFE007BE0C3 /* SBOLTests */,
 			);
 			name = SBOLTests;
 			packageProductDependencies = (
