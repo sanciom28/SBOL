@@ -265,7 +265,6 @@ struct ContentView: View {
                     RealityView { content in
                         loadAndRenderFromJSON(content: nil) // Render container
                     }
-                    //                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
