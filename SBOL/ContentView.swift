@@ -100,17 +100,17 @@ struct ContentView: View {
                         Text("\(Int(rotationSpeed)) rotaciones por minuto")
                             .padding(.bottom, 20)
                     }
-                    Text("Cantidad de contenedores guardados en historial")
+                    Text("Cantidad de envíos guardados en historial")
                     Slider(value: Binding(
                         get: { Double(maxStoredContainers) },
                         set: { maxStoredContainers = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
                     if maxStoredContainers == 1 {
-                        Text("1 contenedor")
+                        Text("1 envío")
                             .padding(.bottom, 20)
                     } else {
-                        Text("\(maxStoredContainers) contenedores")
+                        Text("\(maxStoredContainers) envíos")
                             .padding(.bottom, 20)
                     }
                     Button("Restaurar valores por defecto") {
@@ -120,7 +120,7 @@ struct ContentView: View {
                     }
                     .font(.system(size: 22))
                     .padding(.top, 20)
-                    Button("Borrar historial de contenedores") {
+                    Button("Borrar historial de envío") {
                         print(sharedViewModel.recentJSONs)
                         deleteRecentJSONs()
                         print(sharedViewModel.recentJSONs)
@@ -136,9 +136,9 @@ struct ContentView: View {
                         .font(.system(size: 28))
                         .italic()
                         .padding(.bottom, 60)
-                    Text("Introduzca ID del contenedor:")
+                    Text("Introduzca ID del envío:")
                         .font(.headline)
-                    TextField("ID del contenedor", text: $shipmentID)
+                    TextField("ID del envío", text: $shipmentID)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.numberPad)
                         .frame(maxWidth: 500)
@@ -152,24 +152,23 @@ struct ContentView: View {
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
                     .disabled(shipmentID.isEmpty)
-                    .padding(.bottom, -10)
+                    .padding(.bottom, -15)
+                    Button("Cargar último envío") {
+                        loadRecentJSONs()
+                        if sharedViewModel.recentJSONs.isEmpty {
+                            errorMessage = "No hay envíos recientes"
+                            return
+                        }
+                        
+                    }
+                    .frame(width: 360, height: 80)
+                    .font(.system(size: 24))
+                    .padding(.bottom, -15)
                     Button("Cargar desde archivo") {
                         showDocumentPicker = true
                     }
                     .sheet(isPresented: $showDocumentPicker) {
                         DocumentPickerView(jsonData: $jsonData)
-                    }
-                    .frame(width: 360, height: 80)
-                    .font(.system(size: 24))
-                    .padding(.bottom, -10)
-                    
-                    Button("Cargar último contenedor") {
-                        loadRecentJSONs()
-                        if sharedViewModel.recentJSONs.isEmpty {
-                            errorMessage = "No hay contenedores recientes"
-                            return
-                        }
-                        
                     }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
@@ -195,7 +194,7 @@ struct ContentView: View {
                 ZStack {
                     HStack(alignment: .top) {
                         VStack(spacing: 4) {
-                            Text("Detalles del contenedor")
+                            Text("Detalles del envío")
                                 .font(.title)
                                 .bold()
                                 .padding()
