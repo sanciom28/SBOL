@@ -52,7 +52,7 @@ struct ContentView: View {
         BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
         BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
         BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),   
         BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
         BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
         BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),

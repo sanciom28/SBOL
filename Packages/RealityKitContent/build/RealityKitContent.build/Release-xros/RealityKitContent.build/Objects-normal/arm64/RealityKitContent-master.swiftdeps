@@ -1,0 +1,8 @@
+version: "Apple Swift version 6.1 (swiftlang-6.1.0.106.4 clang-1700.0.9.2)"
+options: "6740b8f0a04f5d1d2b24560646cc6881e6140a192065e4b526ef1d3b8f844eaa"
+build_start_time: [1749603823, 57233000]
+build_end_time: [1749603824, 981172000]
+inputs:
+  "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.swift": [1725155196, 674598217]
+  ? "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/DerivedSources/resource_bundle_accessor.swift"
+  : [1749603819, 223942910]

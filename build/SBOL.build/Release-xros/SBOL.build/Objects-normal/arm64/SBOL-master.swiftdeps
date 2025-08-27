@@ -1,0 +1,19 @@
+version: "Apple Swift version 6.1 (swiftlang-6.1.0.106.4 clang-1700.0.9.2)"
+options: "34046834783c780e87d69c9c6e583968cb8f56cda87bb7609fae2be00b624d28"
+build_start_time: [1749603967, 490874000]
+build_end_time: [1749603967, 495611000]
+inputs:
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxInfo.swift": !dirty [1748993662, 223593580]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxModel.swift": !dirty [1742835847, 985630989]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxesRender.swift": !dirty [1742835848, 1370429]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContainerView.swift": !dirty [1748894092, 198731184]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContainerViewModel.swift": !dirty [1747627865, 995900392]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContentView.swift": !dirty [1749521942, 763073863]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/CubeView.swift": !dirty [1742934383, 601602792]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/DocumentPickerView.swift": !dirty [1745874241, 639811515]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/RecentJSONsViewModel.swift": !dirty [1748206896, 278817534]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SBOLApp.swift": !dirty [1747637131, 874984741]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SecondaryVolumeView.swift": !dirty [1744333235, 272317886]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SettingsView.swift": !dirty [1747768466, 393632888]
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ViewModel.swift": !dirty [1742835996, 87175886]
+  "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/DerivedSources/GeneratedAssetSymbols.swift": !dirty [1749603824, 827236846]

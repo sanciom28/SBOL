@@ -1,0 +1,20 @@
+{
+  "" : {
+    "const-values" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master.swiftconstvalues",
+    "dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master.d",
+    "diagnostics" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master.dia",
+    "emit-module-dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master-emit-module.dia",
+    "swift-dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent-master.swiftdeps"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.swift" : {
+    "index-unit-output-path" : "/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/RealityKitContent.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/DerivedSources/resource_bundle_accessor.swift" : {
+    "index-unit-output-path" : "/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/resource_bundle_accessor.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/resource_bundle_accessor.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/Packages/RealityKitContent/build/RealityKitContent.build/Release-xros/RealityKitContent.build/Objects-normal/arm64/resource_bundle_accessor.o"
+  }
+}

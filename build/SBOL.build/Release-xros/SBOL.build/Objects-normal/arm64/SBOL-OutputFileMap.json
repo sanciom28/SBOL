@@ -1,0 +1,80 @@
+{
+  "" : {
+    "const-values" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master.swiftconstvalues",
+    "dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master.d",
+    "diagnostics" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master.dia",
+    "emit-module-dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master-emit-module.dia",
+    "swift-dependencies" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOL-master.swiftdeps"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxInfo.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxInfo.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxInfo.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxInfo.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxModel.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxModel.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxModel.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxModel.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/BoxesRender.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxesRender.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxesRender.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/BoxesRender.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContainerView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContainerViewModel.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerViewModel.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerViewModel.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContainerViewModel.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ContentView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/CubeView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/CubeView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/CubeView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/CubeView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/DocumentPickerView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/DocumentPickerView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/DocumentPickerView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/DocumentPickerView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/RecentJSONsViewModel.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/RecentJSONsViewModel.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/RecentJSONsViewModel.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/RecentJSONsViewModel.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SBOLApp.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOLApp.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOLApp.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SBOLApp.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SecondaryVolumeView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SecondaryVolumeView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SecondaryVolumeView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SecondaryVolumeView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/SettingsView.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SettingsView.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SettingsView.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/SettingsView.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/SBOL/ViewModel.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ViewModel.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ViewModel.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/ViewModel.o"
+  },
+  "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/matteosancio/Documents/Koona/SBOL/build/SBOL.build/Release-xros/SBOL.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}
