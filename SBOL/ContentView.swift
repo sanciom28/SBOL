@@ -1,4 +1,3 @@
-//
 //  ContentView.swift
 //  SBOL
 //
@@ -40,6 +39,8 @@ struct ContentView: View {
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     
     @State private var filteredJsonData: Data? = nil
+    
+    @State private var realBoxInfo: [BoxInfo] = []
     
     @State private var dummyBoxInfo = [
         BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
@@ -407,28 +408,6 @@ struct ContentView: View {
         boxCount = 0
         volumeEfficiency = 0.0
         model.secondaryVolumeIsShowing = false
-    }
-    
-    // Helper function to convert hex color code to UIColor
-    func hexStringToColor(hex: String) -> UIColor {
-        var cleanedHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        
-        if cleanedHex.hasPrefix("#") {
-            cleanedHex.remove(at: cleanedHex.startIndex)
-        }
-        
-        if cleanedHex.count != 6 {
-            return UIColor.gray // Default to gray if invalid
-        }
-        
-        var rgbValue: UInt64 = 0
-        Scanner(string: cleanedHex).scanHexInt64(&rgbValue)
-        
-        let red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0
-        let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0
-        let blue = CGFloat(rgbValue & 0x0000FF) / 255.0
-        
-        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
     
 }

@@ -39,7 +39,6 @@
 		7BBFC5582C949E350002EBCB /* Exceptions for "SBOL" folder in "SBOLTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				BoxesRender.swift,
 				BoxModel.swift,
 			);
 			target = 7B869BAD2C83FEFE007BE0C3 /* SBOLTests */;

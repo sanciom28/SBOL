@@ -32,14 +32,7 @@ struct SBOLApp: App {
                 
         }
         .windowStyle(.volumetric)
-        
-        WindowGroup (id: "dddd") {
-            SecondaryVolumeView()
-                .environment(model)
-        }
-        .windowStyle(.volumetric)
-        .defaultSize(width: 0.1, height: 0.1, depth: 0.1, in: .meters)
-        
+
         WindowGroup (id: "SettingsView") {
             SettingsView()
                 .environment(model)

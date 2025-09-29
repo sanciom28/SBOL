@@ -10,7 +10,7 @@ import RealityKit
 
 struct ContainerView: View {
     
-    @EnvironmentObject var ContainerViewModel: ContainerViewModel  // Access shared container data
+    @EnvironmentObject var containerViewModel: ContainerViewModel  // Access shared container data
     @State private var containerPosition: SIMD3<Float> = [0, -0.3, 0]
     @State private var angle: Angle = .degrees(0)
     
@@ -18,7 +18,7 @@ struct ContainerView: View {
     @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     
     var body: some View {
-        if ContainerViewModel.rawJSON.isEmpty {
+        if containerViewModel.rawJSON.isEmpty {
             Text("Ningún contenedor seleccionado.")
                 .font(.largeTitle)
         } else {
@@ -43,7 +43,7 @@ struct ContainerView: View {
         let scale = (1/Float(scaleModifier)) * 100000
         let boxPadding = 10/scale
         
-        let container = ContainerViewModel.rawJSON
+        let container = containerViewModel.rawJSON
         
         let containerLength = ((container["container_length"] as? Float ?? 0.0) / scale) + boxPadding*2
         let containerWidth = ((container["container_width"] as? Float ?? 0.0) / scale) + boxPadding*2
@@ -96,28 +96,25 @@ struct ContainerView: View {
         }
         
     }
-}
-
-
-// Helper function to convert hex color code to UIColor
-func hexStringToColor(hex: String) -> UIColor {
-    var cleanedHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
     
-    if cleanedHex.hasPrefix("#") {
-        cleanedHex.remove(at: cleanedHex.startIndex)
+    func hexStringToColor(hex: String) -> UIColor {
+        var cleanedHex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        if cleanedHex.hasPrefix("#") {
+            cleanedHex.remove(at: cleanedHex.startIndex)
+        }
+        
+        if cleanedHex.count != 6 {
+            return UIColor.gray // Default to gray if invalid
+        }
+        
+        var rgbValue: UInt64 = 0
+        Scanner(string: cleanedHex).scanHexInt64(&rgbValue)
+        
+        let red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0
+        let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0
+        let blue = CGFloat(rgbValue & 0x0000FF) / 255.0
+        
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
-    
-    if cleanedHex.count != 6 {
-        return UIColor.gray // Default to gray if invalid
-    }
-    
-    var rgbValue: UInt64 = 0
-    Scanner(string: cleanedHex).scanHexInt64(&rgbValue)
-    
-    let red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0
-    let green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0
-    let blue = CGFloat(rgbValue & 0x0000FF) / 255.0
-    
-    return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
 }
-
