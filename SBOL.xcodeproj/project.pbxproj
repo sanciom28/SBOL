@@ -36,13 +36,6 @@
 			);
 			target = 7B869B922C83FEFC007BE0C3 /* SBOL */;
 		};
-		7BBFC5582C949E350002EBCB /* Exceptions for "SBOL" folder in "SBOLTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				BoxModel.swift,
-			);
-			target = 7B869BAD2C83FEFE007BE0C3 /* SBOLTests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -50,7 +43,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				7B869BB42C83FEFE007BE0C3 /* Exceptions for "SBOL" folder in "SBOL" target */,
-				7BBFC5582C949E350002EBCB /* Exceptions for "SBOL" folder in "SBOLTests" target */,
 			);
 			path = SBOL;
 			sourceTree = "<group>";

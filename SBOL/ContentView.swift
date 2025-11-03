@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var ajustes: Bool = false
     @State private var volumeEfficiency: Double = 0.0
     @State private var historyIndex: Int = 0
+    @State private var showHistory: Bool = false
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
     
@@ -39,6 +40,7 @@ struct ContentView: View {
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     
     @State private var filteredJsonData: Data? = nil
+    
     
     @State private var realBoxInfo: [BoxInfo] = []
     
@@ -155,6 +157,7 @@ struct ContentView: View {
                     .disabled(shipmentID.isEmpty)
                     .padding(.bottom, -15)
                     Button("Cargar último envío") {
+                        historyIndex = 0
                         loadRecentJSONs()
                         if sharedViewModel.recentJSONs.isEmpty {
                             errorMessage = "No hay envíos recientes"
@@ -222,7 +225,7 @@ struct ContentView: View {
                                         .frame(width: 30, height: 30)
                                 }.padding()
                                     .disabled(currentContainerIndex == 0)
-
+                                
                                 Button(action: {
                                     currentContainerIndex+=1
                                     model.secondaryVolumeIsShowing = false
@@ -244,7 +247,24 @@ struct ContentView: View {
                                         dismissWindow(id: "ContainerView")
                                     }
                                 }.padding()
-
+                            if showHistory {
+                                Button(action: {
+                                    historyIndex -= 1
+                                    loadRecentJSONs()
+                                    loadAndRenderFromJSON(content: nil)
+                                }) {
+                                    Text("     Anterior envío     ")
+                                }.disabled(historyIndex == 0)
+                            
+                                Button(action: {
+                                    historyIndex += 1
+                                    loadRecentJSONs()
+                                    loadAndRenderFromJSON(content: nil)
+                                }) {
+                                    Text("    Siguiente envío    ")
+                                }.disabled(historyIndex >= sharedViewModel.recentJSONs.count-1)
+                                .padding()
+                            }
                             Spacer()
                             Button("Volver") {
                                 resetView()
@@ -280,7 +300,7 @@ struct ContentView: View {
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]] {
-                
+
                 let currentContainer = containers[currentContainerIndex]
                 
                 boxCount = jsonObject["total_boxes"] as? Int ?? 0
@@ -383,10 +403,14 @@ struct ContentView: View {
     
     // Load the buffer from UserDefaults
     func loadRecentJSONs() {
+        resetView()
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
             sharedViewModel.recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
             print("Historial: \(sharedViewModel.recentJSONs.count)")
-            jsonData = sharedViewModel.recentJSONs.reversed()[historyIndex]
+            showHistory = true
+            if 0 <= historyIndex && historyIndex < sharedViewModel.recentJSONs.count {
+                jsonData = sharedViewModel.recentJSONs.reversed()[historyIndex]
+            }
         }
     }
     
@@ -408,6 +432,8 @@ struct ContentView: View {
         boxCount = 0
         volumeEfficiency = 0.0
         model.secondaryVolumeIsShowing = false
+        showHistory = false
+        sharedViewModel.recentJSONs = []
     }
     
 }
