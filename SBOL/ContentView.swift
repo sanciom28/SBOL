@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var volumeEfficiency: Double = 0.0
     @State private var historyIndex: Int = 0
     @State private var showHistory: Bool = false
+    @State private var isAPILoading: Bool = false
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
     
@@ -55,7 +56,7 @@ struct ContentView: View {
         BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
         BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
         BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),   
+        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
         BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
         BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
         BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
@@ -149,13 +150,20 @@ struct ContentView: View {
                         .onSubmit {
                             fetchJSONFromAPI()
                         }
-                    Button("Cargar desde API") {
-                        fetchJSONFromAPI()
+                    
+                    if isAPILoading == false {
+                        Button("Cargar desde API") {
+                            fetchJSONFromAPI()
+                        }
+                        .frame(width: 360, height: 80)
+                        .font(.system(size: 24))
+                        .disabled(shipmentID.isEmpty)
+                        .padding(.bottom, -15)
+                    } else {
+                        ProgressView()
+                            .padding()
                     }
-                    .frame(width: 360, height: 80)
-                    .font(.system(size: 24))
-                    .disabled(shipmentID.isEmpty)
-                    .padding(.bottom, -15)
+                    
                     Button("Cargar último envío") {
                         historyIndex = 0
                         loadRecentJSONs()
@@ -255,7 +263,7 @@ struct ContentView: View {
                                 }) {
                                     Text("     Anterior envío     ")
                                 }.disabled(historyIndex == 0)
-                            
+                                
                                 Button(action: {
                                     historyIndex += 1
                                     loadRecentJSONs()
@@ -263,7 +271,7 @@ struct ContentView: View {
                                 }) {
                                     Text("    Siguiente envío    ")
                                 }.disabled(historyIndex >= sharedViewModel.recentJSONs.count-1)
-                                .padding()
+                                    .padding()
                             }
                             Spacer()
                             Button("Volver") {
@@ -272,7 +280,7 @@ struct ContentView: View {
                         }.padding()
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(15)
-
+                        
                         Table(dummyBoxInfo) {
                             TableColumn("ID", value: \.count)
                             TableColumn("Cantidad", value: \.count)
@@ -300,7 +308,7 @@ struct ContentView: View {
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]] {
-
+                
                 let currentContainer = containers[currentContainerIndex]
                 
                 boxCount = jsonObject["total_boxes"] as? Int ?? 0
@@ -325,8 +333,11 @@ struct ContentView: View {
     }
     
     func fetchJSONFromAPI() {
+        isAPILoading = true
+        errorMessage = nil
         guard let shipmentNumber = Int(shipmentID) else {
             errorMessage = "ID de envío inválido"
+            isAPILoading = false
             return
         }
         let baseURL = "https://lin004.koona.cloud/QPMCalcServer/cfc/QPMShipmentService.cfc?method=exportSBoL&shipment="
@@ -338,13 +349,13 @@ struct ContentView: View {
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
               let jsonString = String(data: jsonData, encoding: .utf8)?
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            DispatchQueue.main.async { errorMessage = "Failed to encode request JSON" }
+            DispatchQueue.main.async { errorMessage = "Error al codificar la solicitud JSON"; isAPILoading = false }
             return
         }
         
         let urlString = baseURL + jsonString
         guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async { errorMessage = "URL del API inválido" }
+            DispatchQueue.main.async { errorMessage = "URL del API inválido"; isAPILoading = false }
             return
         }
         
@@ -356,28 +367,33 @@ struct ContentView: View {
             DispatchQueue.main.async {
                 if let error = error {
                     errorMessage = "Fallo en solicitud: \(error.localizedDescription)"
+                    isAPILoading = false
                     return
                 }
                 
                 guard let data = data else {
                     errorMessage = "No se recibieron datos"
+                    isAPILoading = false
                     return
                 }
                 
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    if jsonObject!["errormessage"] != nil {
+                    if jsonObject!["errormessage"] != nil || jsonObject?["waybill"] as! Int == 0 {
                         errorMessage = "Envío no encontrado"
+                        isAPILoading = false
                         return
                     }
+                    
                 } catch {
                     errorMessage = "Error parsing JSON: \(error.localizedDescription)"
+                    isAPILoading = false
                     return
                 }
                 
+                isAPILoading = false
                 self.jsonData = data
                 addToRecentJSONs(data)
-                
             }
         }.resume()
         
@@ -437,4 +453,3 @@ struct ContentView: View {
     }
     
 }
-
