@@ -167,6 +167,7 @@ struct ContentView: View {
                     Button("Cargar último envío") {
                         historyIndex = 0
                         loadRecentJSONs()
+                        showHistory = true
                         if sharedViewModel.recentJSONs.isEmpty {
                             errorMessage = "No hay envíos recientes"
                             return
@@ -259,6 +260,7 @@ struct ContentView: View {
                                 Button(action: {
                                     historyIndex -= 1
                                     loadRecentJSONs()
+                                    showHistory = true
                                     loadAndRenderFromJSON(content: nil)
                                 }) {
                                     Text("     Anterior envío     ")
@@ -267,6 +269,7 @@ struct ContentView: View {
                                 Button(action: {
                                     historyIndex += 1
                                     loadRecentJSONs()
+                                    showHistory = true
                                     loadAndRenderFromJSON(content: nil)
                                 }) {
                                     Text("    Siguiente envío    ")
@@ -393,6 +396,7 @@ struct ContentView: View {
                 
                 isAPILoading = false
                 self.jsonData = data
+                loadRecentJSONs()
                 addToRecentJSONs(data)
             }
         }.resume()
@@ -423,7 +427,6 @@ struct ContentView: View {
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
             sharedViewModel.recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
             print("Historial: \(sharedViewModel.recentJSONs.count)")
-            showHistory = true
             if 0 <= historyIndex && historyIndex < sharedViewModel.recentJSONs.count {
                 jsonData = sharedViewModel.recentJSONs.reversed()[historyIndex]
             }
