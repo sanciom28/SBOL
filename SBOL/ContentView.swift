@@ -39,6 +39,8 @@ struct ContentView: View {
     @AppStorage("scaleModifier") var scaleModifier: Int = 10
     @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
+    @AppStorage("apiUsername") var apiUsername: String = ""
+    @AppStorage("apiPassword") var apiPassword: String = ""
     
     @State private var filteredJsonData: Data? = nil
     
@@ -66,6 +68,11 @@ struct ContentView: View {
         BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)")
     ]
     
+    @State private var showCredentialPrompt: Bool = false
+    @State private var showCredentialSheet: Bool = false
+    @State private var tempUsername: String = ""
+    @State private var tempPassword: String = ""
+    
     var body: some View {
         
         @Bindable var model = model
@@ -75,9 +82,9 @@ struct ContentView: View {
             if jsonData == nil {
                 if ajustes {
                     Text("Configuración")
-                        .font(.system(size: 36))
+                        .font(.largeTitle)
                         .bold()
-                        .padding(.bottom, 50)
+                        .padding(.bottom, 40)
                     Text("Escala del contenedor")
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
@@ -86,9 +93,11 @@ struct ContentView: View {
                     .frame(width: 500)
                     if scaleModifier == 100 {
                         Text("Tamaño real")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
                         Text("\(scaleModifier)% del tamaño real")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
                     Text("Velocidad de rotación de contenedor")
@@ -99,9 +108,11 @@ struct ContentView: View {
                     .frame(width: 500)
                     if rotationSpeed == 0 {
                         Text("Rotación desactivada")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
                         Text("\(Int(rotationSpeed)) rotaciones por minuto")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
                     Text("Cantidad de envíos guardados en historial")
@@ -112,25 +123,32 @@ struct ContentView: View {
                     .frame(width: 500)
                     if maxStoredContainers == 1 {
                         Text("1 envío")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
                         Text("\(maxStoredContainers) envíos")
+                            .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
+                    Button("Editar credenciales de API") {
+                        tempUsername = apiUsername
+                        tempPassword = apiPassword
+                        showCredentialSheet = true
+                    }
+                    .font(.system(size: 22))
+                    .padding(.top, 20)
                     Button("Restaurar valores por defecto") {
                         scaleModifier = 10
                         maxStoredContainers = 20
                         rotationSpeed = 3.0
                     }
                     .font(.system(size: 22))
-                    .padding(.top, 20)
+                    .padding(.top, 12)
                     Button("Borrar historial de envío") {
-                        print(sharedViewModel.recentJSONs)
                         deleteRecentJSONs()
-                        print(sharedViewModel.recentJSONs)
                     }
                     .font(.system(size: 22))
-                    .padding()
+                    .padding(12)
                 } else {
                     Text("SBOL")
                         .font(.system(size: 150))
@@ -299,6 +317,47 @@ struct ContentView: View {
                 }
             }
         }
+        .alert(isPresented: $showCredentialPrompt) {
+            Alert(
+                title: Text("Credenciales requeridas"),
+                message: Text("Por favor, introduzca su nombre de usuario y contraseña para continuar."),
+                primaryButton: .default(Text("Aceptar"), action: {
+                    tempUsername = apiUsername
+                    tempPassword = apiPassword
+                    showCredentialSheet = true
+                }),
+                secondaryButton: .cancel()
+            )
+        }
+        .sheet(isPresented: $showCredentialSheet) {
+            VStack(spacing: 20) {
+                Text("Editar credenciales de API")
+                    .font(.title2)
+                    //.bold()
+                    //.padding(.top, 35)
+                TextField("Usuario", text: $tempUsername)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 400)
+                SecureField("Contraseña", text: $tempPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 400)
+                    .padding(.bottom, 10)
+                HStack {
+                    Button("Cancelar") {
+                        showCredentialSheet = false
+                    }
+                    .padding(.horizontal, 16)
+                    Button("Guardar") {
+                        apiUsername = tempUsername
+                        apiPassword = tempPassword
+                        showCredentialSheet = false
+                    }
+                    .padding(.horizontal, 16)
+                }
+            }
+            .frame(width: 450, height: 250)
+            .padding()
+        }
     }
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
@@ -338,6 +397,12 @@ struct ContentView: View {
     func fetchJSONFromAPI() {
         isAPILoading = true
         errorMessage = nil
+        // Prompt for credentials if missing
+        guard !apiUsername.isEmpty, !apiPassword.isEmpty else {
+            showCredentialPrompt = true
+            isAPILoading = false
+            return
+        }
         guard let shipmentNumber = Int(shipmentID) else {
             errorMessage = "ID de envío inválido"
             isAPILoading = false
@@ -364,7 +429,8 @@ struct ContentView: View {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Basic " + Data("matteo.sancio@correo.unimet.edu.ve:tropical019".utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
+        let credentials = apiUsername + ":" + apiPassword
+        request.setValue("Basic " + Data(credentials.utf8).base64EncodedString(), forHTTPHeaderField: "Authorization")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
