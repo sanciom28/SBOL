@@ -404,13 +404,13 @@ struct ContentView: View {
     }
     
     func addToRecentJSONs(_ json: Data) {
+        // Remove all previous instances of this JSON
+        sharedViewModel.recentJSONs.removeAll(where: { $0 == json })
+        // If buffer is full, remove oldest
         if sharedViewModel.recentJSONs.count >= maxStoredContainers {
             sharedViewModel.recentJSONs.removeFirst()
         }
-        if sharedViewModel.recentJSONs.last == json {
-            print("Duplicate JSON found, not adding to recent JSONs.")
-            return // Avoid adding duplicates back to back
-        }
+        // Add the new JSON
         sharedViewModel.recentJSONs.append(json)
         saveRecentJSONs()
     }
