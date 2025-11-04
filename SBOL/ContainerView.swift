@@ -17,6 +17,8 @@ struct ContainerView: View {
     @AppStorage("scaleModifier") var scaleModifier: Int = 10000
     @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     
+    @State private var isLoading: Bool = true
+    
     var body: some View {
         if containerViewModel.rawJSON.isEmpty {
             Text("Ningún contenedor seleccionado.")
@@ -24,7 +26,13 @@ struct ContainerView: View {
         } else {
             ZStack(alignment: .bottom) {
                 RealityView { content in
+                    DispatchQueue.main.async {
+                        isLoading = true
+                    }
                     renderJSON(content: content)  // Render container
+                    DispatchQueue.main.async {
+                        isLoading = false
+                    }
                 }
                 .rotation3DEffect(angle, axis: .y)
                 .animation(.linear(duration: (60/rotationSpeed)*100).repeatForever(), value: angle)
@@ -32,10 +40,13 @@ struct ContainerView: View {
                     angle = .degrees(35999)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+                if isLoading {
+                    ProgressView()
+                        .padding(.bottom, 80)
+                }
             }
-            
         }
-        
     }
     
     func renderJSON (content: RealityKit.RealityViewContent?) {
