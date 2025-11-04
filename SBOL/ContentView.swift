@@ -397,7 +397,6 @@ struct ContentView: View {
     func fetchJSONFromAPI() {
         isAPILoading = true
         errorMessage = nil
-        // Prompt for credentials if missing
         guard !apiUsername.isEmpty, !apiPassword.isEmpty else {
             showCredentialPrompt = true
             isAPILoading = false
@@ -461,8 +460,8 @@ struct ContentView: View {
                 }
                 
                 isAPILoading = false
-                self.jsonData = data
                 loadRecentJSONs()
+                self.jsonData = data
                 addToRecentJSONs(data)
             }
         }.resume()
@@ -470,14 +469,14 @@ struct ContentView: View {
     }
     
     func addToRecentJSONs(_ json: Data) {
-        // Remove all previous instances of this JSON
+        // Remove previous instances of this JSON
         sharedViewModel.recentJSONs.removeAll(where: { $0 == json })
-        // If buffer is full, remove oldest
-        if sharedViewModel.recentJSONs.count >= maxStoredContainers {
-            sharedViewModel.recentJSONs.removeFirst()
-        }
         // Add the new JSON
         sharedViewModel.recentJSONs.append(json)
+        // If buffer is now over the limit, remove oldest
+        if sharedViewModel.recentJSONs.count > maxStoredContainers {
+            sharedViewModel.recentJSONs.removeFirst()
+        }
         saveRecentJSONs()
     }
     
