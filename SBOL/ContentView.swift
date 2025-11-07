@@ -48,24 +48,24 @@ struct ContentView: View {
     @State private var realBoxInfo: [BoxInfo] = []
     
     @State private var dummyBoxInfo = [
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)"),
-        BoxInfo(count: "10", color: "UIColor.red", dimensions: "SIMD3<Float>(1, 1, 1)"),
-        BoxInfo(count: "30", color: "UIColor.blue", dimensions: "SIMD3<Float>(3, 3, 3)"),
-        BoxInfo(count: "20", color: "UIColor.green", dimensions: "SIMD3<Float>(2, 2, 2)")
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
+        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green")
     ]
     
     @State private var showCredentialPrompt: Bool = false
@@ -190,7 +190,6 @@ struct ContentView: View {
                             errorMessage = "No hay envíos recientes"
                             return
                         }
-                        
                     }
                     .frame(width: 360, height: 80)
                     .font(.system(size: 24))
@@ -304,9 +303,9 @@ struct ContentView: View {
                         
                         Table(dummyBoxInfo) {
                             TableColumn("ID", value: \.count)
+                            TableColumn("Nombre", value: \.name)
                             TableColumn("Cantidad", value: \.count)
                             TableColumn("Color", value: \.color)
-                            TableColumn("Dimensiones (LxHxW)", value: \.dimensions)
                         }.padding()
                             .frame(maxHeight: 300)
                     }
