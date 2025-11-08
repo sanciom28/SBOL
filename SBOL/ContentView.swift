@@ -47,27 +47,6 @@ struct ContentView: View {
     
     @State private var realBoxInfo: [BoxInfo] = []
     
-    @State private var dummyBoxInfo = [
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "10", color: "UIColor.red"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "30", color: "UIColor.blue"),
-        BoxInfo(name: "CHOCO CRISPIS", count: "20", color: "UIColor.green")
-    ]
-    
     @State private var showCredentialPrompt: Bool = false
     @State private var showCredentialSheet: Bool = false
     @State private var tempUsername: String = ""
@@ -301,8 +280,8 @@ struct ContentView: View {
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(15)
                         
-                        Table(dummyBoxInfo) {
-                            TableColumn("ID", value: \.count)
+                        Table(realBoxInfo) {
+                            TableColumn("ID", value: \.id)
                             TableColumn("Nombre", value: \.name)
                             TableColumn("Cantidad", value: \.count)
                             TableColumn("Color", value: \.color)
@@ -383,6 +362,18 @@ struct ContentView: View {
                 
                 containerCount = containers.count
                 
+                // Parse items for the table
+                realBoxInfo = []
+                if let items = currentContainer["items"] as? [[String: Any]] {
+                    for item in items {
+                        let id = String(describing: item["product_code"] ?? "")
+                        let name = String(describing: item["prd_description"] ?? "")
+                        let count = String(describing: item["prod_amount"] ?? "")
+                        // Color is not handled for now
+                        realBoxInfo.append(BoxInfo(id: id, name: name, count: count, color: ""))
+                    }
+                }
+                
                 if (currentContainer["locations"] != nil) {
                     containerViewModel.addRawJSON(json: currentContainer)
                 }
@@ -446,6 +437,7 @@ struct ContentView: View {
                 
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                    print(jsonObject)
                     if jsonObject!["errormessage"] != nil || jsonObject?["waybill"] as! Int == 0 {
                         errorMessage = "Envío no encontrado"
                         isAPILoading = false

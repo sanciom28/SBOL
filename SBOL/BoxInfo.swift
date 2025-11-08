@@ -9,7 +9,8 @@ import SwiftUI
 
 // Struct for table purposes
 struct BoxInfo: Identifiable {
-    var id = UUID()
+    var uuid = UUID()
+    var id: String
     var name: String
     var count: String
     var color: String
