@@ -312,8 +312,6 @@ struct ContentView: View {
             VStack(spacing: 20) {
                 Text("Editar credenciales de API")
                     .font(.title2)
-                    //.bold()
-                    //.padding(.top, 35)
                 TextField("Usuario", text: $tempUsername)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 400)
@@ -363,7 +361,6 @@ struct ContentView: View {
                 
                 containerCount = containers.count
                 
-                // Parse items for the table
                 realBoxInfo = []
                 if let items = currentContainer["items"] as? [[String: Any]] {
                     for item in items {
@@ -460,24 +457,19 @@ struct ContentView: View {
     }
     
     func addToRecentJSONs(_ json: Data) {
-        // Remove previous instances of this JSON
         sharedViewModel.recentJSONs.removeAll(where: { $0 == json })
-        // Add the new JSON
         sharedViewModel.recentJSONs.append(json)
-        // If buffer is now over the limit, remove oldest
         if sharedViewModel.recentJSONs.count > maxStoredContainers {
             sharedViewModel.recentJSONs.removeFirst()
         }
         saveRecentJSONs()
     }
     
-    // Save the buffer to UserDefaults
     func saveRecentJSONs() {
         let jsonStrings = sharedViewModel.recentJSONs.map { String(data: $0, encoding: .utf8) ?? "" }
         UserDefaults.standard.set(jsonStrings, forKey: "RecentJSONs")
     }
     
-    // Load the buffer from UserDefaults
     func loadRecentJSONs() {
         resetView()
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
@@ -489,13 +481,11 @@ struct ContentView: View {
         }
     }
     
-    // Delete the buffer
     func deleteRecentJSONs() {
         sharedViewModel.recentJSONs.removeAll()
         UserDefaults.standard.removeObject(forKey: "RecentJSONs")
     }
     
-    // Reset view to ask for JSON again
     func resetView() {
         dismissWindow(id: "ContainerView")
         shipmentID = ""
