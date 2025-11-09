@@ -13,9 +13,4 @@ struct BoxInfo: Identifiable {
     var id: String
     var name: String
     var count: String
-    var color: String
-
-//    var count: Int
-//    var color: UIColor
-//    var dimensions: SIMD3<Float> // (length, height, width)
 }

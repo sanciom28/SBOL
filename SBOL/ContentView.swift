@@ -282,11 +282,12 @@ struct ContentView: View {
                         
                         Table(realBoxInfo) {
                             TableColumn("ID", value: \.id)
+                                .width(160)
                             TableColumn("Nombre", value: \.name)
                             TableColumn("Cantidad", value: \.count)
-                            TableColumn("Color", value: \.color)
+                                .width(130)
+                                .alignment(.trailing)
                         }.padding()
-                            .frame(maxHeight: 300)
                     }
                     
                     RealityView { content in
@@ -369,8 +370,7 @@ struct ContentView: View {
                         let id = String(describing: item["product_code"] ?? "")
                         let name = String(describing: item["prd_description"] ?? "")
                         let count = String(describing: item["prod_amount"] ?? "")
-                        // Color is not handled for now
-                        realBoxInfo.append(BoxInfo(id: id, name: name, count: count, color: ""))
+                        realBoxInfo.append(BoxInfo(id: id, name: name, count: count))
                     }
                 }
                 
