@@ -288,6 +288,11 @@ struct ContentView: View {
                                 .width(130)
                                 .alignment(.trailing)
                         }.padding()
+                        .onChange(of: selectedBox) { oldSelection, newSelection in
+                            if let selected = newSelection.first, let box = realBoxInfo.first(where: { $0.id == selected }) {
+                                print(box.id)
+                            }
+                        }
                         Spacer(minLength: 20)
                     }
                     
