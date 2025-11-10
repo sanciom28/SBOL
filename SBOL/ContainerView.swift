@@ -43,7 +43,7 @@ struct ContainerView: View {
                 
                 if isLoading {
                     ProgressView()
-                        .padding(.bottom, 80)
+                        .padding(.bottom, 300)
                 }
             }
         }

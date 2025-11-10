@@ -11,9 +11,9 @@ import SwiftUI
 struct SBOLApp: App {
         
     @State private var model = ViewModel()
-    
     @StateObject private var containerVM = ContainerViewModel()
     @StateObject var sharedViewModel = RecentJSONsViewModel()
+    @AppStorage("scaleModifier") var scaleModifier: Int = 10
     
     var body: some Scene {
         
@@ -24,14 +24,13 @@ struct SBOLApp: App {
                 .environmentObject(sharedViewModel)
         }
         
-        
         WindowGroup (id: "ContainerView") {
             ContainerView()
                 .environment(model)
                 .environmentObject(containerVM)
-                
         }
         .windowStyle(.volumetric)
+        .defaultSize(CGSize(width: 125*scaleModifier, height: 125*scaleModifier))
 
         WindowGroup (id: "SettingsView") {
             SettingsView()
