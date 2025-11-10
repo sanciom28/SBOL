@@ -18,7 +18,7 @@ struct ContentView: View {
     @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
-    @State private var boxData: [Int: BoxInfo] = [:] // Dictionary with boxID as key
+    @State private var boxData: [Int: BoxInfo] = [:]
     @State private var shipmentID: String = ""
     @State private var errorMessage: String?
     @State private var ajustes: Bool = false
@@ -26,14 +26,17 @@ struct ContentView: View {
     @State private var historyIndex: Int = 0
     @State private var showHistory: Bool = false
     @State private var isAPILoading: Bool = false
+    @State private var realBoxInfo: [BoxInfo] = []
+    @State private var selectedBox = Set<BoxInfo.ID>()
+    @State private var showCredentialPrompt: Bool = false
+    @State private var showCredentialSheet: Bool = false
+    @State private var tempUsername: String = ""
+    @State private var tempPassword: String = ""
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
-    
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
-    
     @Environment(ViewModel.self) var model
-    
     @EnvironmentObject var sharedViewModel: RecentJSONsViewModel
     
     @AppStorage("scaleModifier") var scaleModifier: Int = 10
@@ -41,14 +44,6 @@ struct ContentView: View {
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     @AppStorage("apiUsername") var apiUsername: String = ""
     @AppStorage("apiPassword") var apiPassword: String = ""
-        
-    @State private var realBoxInfo: [BoxInfo] = []
-    @State private var selectedBox = Set<BoxInfo.ID>()
-    
-    @State private var showCredentialPrompt: Bool = false
-    @State private var showCredentialSheet: Bool = false
-    @State private var tempUsername: String = ""
-    @State private var tempPassword: String = ""
     
     var body: some View {
         
@@ -292,13 +287,13 @@ struct ContentView: View {
                                 .width(130)
                                 .alignment(.trailing)
                         }.padding()
-                        .onChange(of: selectedBox) { oldSelection, newSelection in
-                            if let selected = newSelection.first, let box = realBoxInfo.first(where: { $0.id == selected }) {
-                                dismissWindow(id: "ContainerView")
-                                filterJSONData(id: box.id)
-                                openWindow(id: "ContainerView")
+                            .onChange(of: selectedBox) { oldSelection, newSelection in
+                                if let selected = newSelection.first, let box = realBoxInfo.first(where: { $0.id == selected }) {
+                                    dismissWindow(id: "ContainerView")
+                                    filterJSONData(id: box.id)
+                                    openWindow(id: "ContainerView")
+                                }
                             }
-                        }
                         Spacer(minLength: 20)
                     }
                     
@@ -351,7 +346,7 @@ struct ContentView: View {
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent? = nil) {
         guard let jsonData = jsonData else { return }
-
+        
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]] {
@@ -433,13 +428,11 @@ struct ContentView: View {
                     isAPILoading = false
                     return
                 }
-                
                 guard let data = data else {
                     errorMessage = "No se recibieron datos"
                     isAPILoading = false
                     return
                 }
-                
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if jsonObject!["errormessage"] != nil || jsonObject?["waybill"] as! Int == 0 {
@@ -447,7 +440,6 @@ struct ContentView: View {
                         isAPILoading = false
                         return
                     }
-                    
                 } catch {
                     errorMessage = "Error parsing JSON: \(error.localizedDescription)"
                     isAPILoading = false
@@ -460,7 +452,6 @@ struct ContentView: View {
                 addToRecentJSONs(data)
             }
         }.resume()
-        
     }
     
     func addToRecentJSONs(_ json: Data) {

@@ -24,14 +24,12 @@ struct SettingsView: View {
             Spacer()
             
             Text("Escala del contenedor")
-            //.font(.headline)
             Slider(value: Binding(
                 get: { Double(scaleModifier) },
                 set: { scaleModifier = Int($0) }
             ), in: 1...100, step: 1)
             .padding()
             Text("\(scaleModifier)%")
-            //.font(.subheadline)
                 .padding(.top, -10)
             
             Text("Cantidad de contenedores guardados en historial")
@@ -41,20 +39,16 @@ struct SettingsView: View {
             ), in: 1...100, step: 1)
             .padding()
             Text("\(maxStoredContainers) contenedores")
-            //.font(.subheadline)
                 .padding(.top, -10)
 
             
             Button("Restaurar valores por defecto") {
-                print("Scale value before restoring: \(scaleModifier)")
-                print("Max buffer value before restoring: \(maxStoredContainers)")
                 scaleModifier = 10
                 maxStoredContainers = 20
             }
             
             Button("Borrar historial de contenedores") {
                 sharedViewModel.clearRecentJSONs()
-                print(sharedViewModel.recentJSONs)
             }
             
             Spacer()
