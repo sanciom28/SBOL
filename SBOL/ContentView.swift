@@ -218,9 +218,10 @@ struct ContentView: View {
                             }
                             HStack {
                                 Button(action: {
+                                    selectedBox.removeAll()
                                     currentContainerIndex-=1
                                     model.secondaryVolumeIsShowing = false
-                                    loadAndRenderFromJSON(content: nil) // Render container
+                                    loadAndRenderFromJSON() // Render container
                                     
                                 }) {
                                     Image(systemName: "arrow.left")
@@ -230,9 +231,10 @@ struct ContentView: View {
                                     .disabled(currentContainerIndex == 0)
                                 
                                 Button(action: {
+                                    selectedBox.removeAll()
                                     currentContainerIndex+=1
                                     model.secondaryVolumeIsShowing = false
-                                    loadAndRenderFromJSON(content: nil) // Render container
+                                    loadAndRenderFromJSON() // Render container
                                     
                                 }) {
                                     Image(systemName: "arrow.right")
@@ -244,6 +246,7 @@ struct ContentView: View {
                             Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
                                 .toggleStyle(.button)
                                 .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                    selectedBox.removeAll()
                                     if isShowing {
                                         openWindow(id: "ContainerView")
                                     } else {
@@ -252,19 +255,21 @@ struct ContentView: View {
                                 }.padding()
                             if showHistory {
                                 Button(action: {
+                                    selectedBox.removeAll()
                                     historyIndex -= 1
                                     loadRecentJSONs()
                                     showHistory = true
-                                    loadAndRenderFromJSON(content: nil)
+                                    loadAndRenderFromJSON()
                                 }) {
                                     Text("     Anterior envío     ")
                                 }.disabled(historyIndex == 0)
                                 
                                 Button(action: {
+                                    selectedBox.removeAll()
                                     historyIndex += 1
                                     loadRecentJSONs()
                                     showHistory = true
-                                    loadAndRenderFromJSON(content: nil)
+                                    loadAndRenderFromJSON()
                                 }) {
                                     Text("    Siguiente envío    ")
                                 }.disabled(historyIndex >= sharedViewModel.recentJSONs.count-1)
@@ -297,7 +302,7 @@ struct ContentView: View {
                     }
                     
                     RealityView { content in
-                        loadAndRenderFromJSON(content: nil)
+                        loadAndRenderFromJSON()
                     }
                 }
             }
@@ -343,7 +348,7 @@ struct ContentView: View {
         }
     }
     
-    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
+    func loadAndRenderFromJSON(content: RealityKit.RealityViewContent? = nil) {
         guard let jsonData = jsonData else { return }
 
         do {
