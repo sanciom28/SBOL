@@ -273,14 +273,14 @@ struct ContentView: View {
                                     .padding()
                             }
                             Spacer()
-                            Button("Volver") {
+                            Button(" Volver ") {
                                 resetView()
                             }.padding()
                         }.padding()
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(15)
                         
-                        Table(realBoxInfo) {
+                        Table(realBoxInfo, selection: .constant(nil)) {
                             TableColumn("ID", value: \.id)
                                 .width(160)
                             TableColumn("Nombre", value: \.name)
@@ -288,10 +288,11 @@ struct ContentView: View {
                                 .width(130)
                                 .alignment(.trailing)
                         }.padding()
+                        Spacer(minLength: 20)
                     }
                     
                     RealityView { content in
-                        loadAndRenderFromJSON(content: nil) // Render container
+                        loadAndRenderFromJSON(content: nil)
                     }
                 }
             }
@@ -434,7 +435,6 @@ struct ContentView: View {
                 
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    print(jsonObject)
                     if jsonObject!["errormessage"] != nil || jsonObject?["waybill"] as! Int == 0 {
                         errorMessage = "Envío no encontrado"
                         isAPILoading = false
