@@ -61,7 +61,7 @@ struct ContentView: View {
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
                         set: { scaleModifier = Int($0) }
-                    ), in: 1...100, step: 1)
+                    ), in: 1...15, step: 1)
                     .frame(width: 500)
                     if scaleModifier == 100 {
                         Text("Tamaño real")

@@ -13,11 +13,10 @@ struct ContainerView: View {
     @EnvironmentObject var containerViewModel: ContainerViewModel  // Access shared container data
     @State private var containerPosition: SIMD3<Float> = [0, -0.3, 0]
     @State private var angle: Angle = .degrees(0)
+    @State private var isLoading: Bool = true
     
     @AppStorage("scaleModifier") var scaleModifier: Int = 10000
     @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
-    
-    @State private var isLoading: Bool = true
     
     var body: some View {
         if containerViewModel.rawJSON.isEmpty {
