@@ -44,8 +44,8 @@ struct ContentView: View {
     
     @State private var filteredJsonData: Data? = nil
     
-    
     @State private var realBoxInfo: [BoxInfo] = []
+    @State private var selectedBox = Set<BoxInfo.ID>()
     
     @State private var showCredentialPrompt: Bool = false
     @State private var showCredentialSheet: Bool = false
@@ -280,7 +280,7 @@ struct ContentView: View {
                             .background(Color.white.opacity(0.15))
                             .cornerRadius(15)
                         
-                        Table(realBoxInfo, selection: .constant(nil)) {
+                        Table(realBoxInfo, selection: $selectedBox) {
                             TableColumn("ID", value: \.id)
                                 .width(160)
                             TableColumn("Nombre", value: \.name)
