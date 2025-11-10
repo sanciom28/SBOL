@@ -247,6 +247,7 @@ struct ContentView: View {
                                 .toggleStyle(.button)
                                 .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
                                     selectedBox.removeAll()
+                                    loadAndRenderFromJSON()
                                     if isShowing {
                                         openWindow(id: "ContainerView")
                                     } else {
