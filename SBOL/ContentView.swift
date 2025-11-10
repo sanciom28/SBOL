@@ -41,9 +41,7 @@ struct ContentView: View {
     @AppStorage("maxStoredContainers") var maxStoredContainers: Int = 20
     @AppStorage("apiUsername") var apiUsername: String = ""
     @AppStorage("apiPassword") var apiPassword: String = ""
-    
-    @State private var filteredJsonData: Data? = nil
-    
+        
     @State private var realBoxInfo: [BoxInfo] = []
     @State private var selectedBox = Set<BoxInfo.ID>()
     
@@ -290,7 +288,9 @@ struct ContentView: View {
                         }.padding()
                         .onChange(of: selectedBox) { oldSelection, newSelection in
                             if let selected = newSelection.first, let box = realBoxInfo.first(where: { $0.id == selected }) {
-                                print(box.id)
+                                dismissWindow(id: "ContainerView")
+                                filterJSONData(id: box.id)
+                                openWindow(id: "ContainerView")
                             }
                         }
                         Spacer(minLength: 20)
@@ -344,12 +344,8 @@ struct ContentView: View {
     }
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent?) {
-        guard var jsonData = jsonData else { return }
-        
-        if let filteredData = filteredJsonData {
-            jsonData = filteredData
-        }
-        
+        guard let jsonData = jsonData else { return }
+
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
                let containers = jsonObject["containers"] as? [[String: Any]] {
@@ -486,6 +482,29 @@ struct ContentView: View {
         }
     }
     
+    func filterJSONData(id: String, content: RealityKit.RealityViewContent? = nil) {
+        guard let jsonData = jsonData else { return }
+        do {
+            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any],
+               let containers = jsonObject["containers"] as? [[String: Any]] {
+                let currentContainer = containers[currentContainerIndex]
+                if let locations = currentContainer["locations"] as? String {
+                    var boxDetails = locations.components(separatedBy: "\r").filter { !$0.isEmpty }
+                    boxDetails.removeAll { boxDetail in
+                        let values = boxDetail.components(separatedBy: ",")
+                        return values.count > 2 && values[2] != id
+                    }
+                    let filteredLocations = boxDetails.joined(separator: "\r")
+                    var modifiedContainer = currentContainer
+                    modifiedContainer["locations"] = filteredLocations
+                    containerViewModel.addRawJSON(json: modifiedContainer)
+                }
+            }
+        } catch {
+            errorMessage = "Error loading JSON: \(error.localizedDescription)"
+        }
+    }
+    
     func deleteRecentJSONs() {
         sharedViewModel.recentJSONs.removeAll()
         UserDefaults.standard.removeObject(forKey: "RecentJSONs")
@@ -495,7 +514,6 @@ struct ContentView: View {
         dismissWindow(id: "ContainerView")
         shipmentID = ""
         jsonData = nil
-        filteredJsonData = nil
         errorMessage = nil
         containers.removeAll()
         currentContainerIndex = 0
