@@ -382,6 +382,15 @@ struct ContentView: View {
                 }
             }
         }
+        .onChange(of: errorMessage) { _, newValue in
+            if newValue != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    if errorMessage == newValue {
+                        errorMessage = nil
+                    }
+                }
+            }
+        }
     }
     
     func loadAndRenderFromJSON(content: RealityKit.RealityViewContent? = nil) {
