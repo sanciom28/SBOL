@@ -129,6 +129,9 @@ struct ContentView: View {
                             .opacity(appearStep > 0 ? 1 : 0)
                             .offset(y: appearStep > 0 ? 0 : 40)
                             .animation(.easeOut(duration: 0.5), value: appearStep)
+                            .onAppear {
+                                dismissWindow(id: "ContainerView")
+                            }
                             .padding(.top, -15)
                         Text("Spatial Bill of Lading")
                             .font(.system(size: 28))
