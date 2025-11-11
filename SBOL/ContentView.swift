@@ -215,7 +215,7 @@ struct ContentView: View {
                 if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
-                        .padding(.bottom)
+                        .padding()
                 }
             } else {
                 // UI after JSON is loaded
@@ -418,7 +418,7 @@ struct ContentView: View {
                 
             }
         } catch {
-            errorMessage = "Error loading JSON: \(error.localizedDescription)"
+            errorMessage = "Error cargando JSON: \(error.localizedDescription)"
         }
     }
     
