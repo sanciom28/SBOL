@@ -27,8 +27,9 @@ struct SBOLApp: App {
             ContainerView()
                 .environment(model)
                 .environmentObject(containerVM)
+                .frame(width: 1250, height: 1250)
         }
         .windowStyle(.volumetric)
-
+        .windowResizability(.contentSize)
     }
 }
