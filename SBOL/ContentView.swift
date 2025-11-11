@@ -32,6 +32,7 @@ struct ContentView: View {
     @State private var showCredentialSheet: Bool = false
     @State private var tempUsername: String = ""
     @State private var tempPassword: String = ""
+    @State private var appearStep: Int = 0
     
     @EnvironmentObject var containerViewModel: ContainerViewModel
     @Environment(\.openWindow) private var openWindow
@@ -46,11 +47,8 @@ struct ContentView: View {
     @AppStorage("apiPassword") var apiPassword: String = ""
     
     var body: some View {
-        
         @Bindable var model = model
-        
         VStack {
-            
             if jsonData == nil {
                 if ajustes {
                     Text("Configuración")
@@ -122,59 +120,85 @@ struct ContentView: View {
                     .font(.system(size: 22))
                     .padding(12)
                 } else {
-                    Text("SBOL")
-                        .font(.system(size: 150))
-                        .fontDesign(.monospaced)
-                        .bold()
-                    Text("Spatial Bill of Lading")
-                        .font(.system(size: 28))
-                        .italic()
-                        .padding(.bottom, 60)
-                    Text("Introduzca ID del envío:")
-                        .font(.headline)
-                    TextField("ID del envío", text: $shipmentID)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.numberPad)
-                        .frame(maxWidth: 500)
-                        .padding()
-                        .onSubmit {
-                            fetchJSONFromAPI()
+                    Group {
+                        Text("SBOL")
+                            .font(.system(size: 150))
+                            .fontDesign(.monospaced)
+                            .bold()
+                            .offset(z: 20)
+                            .opacity(appearStep > 0 ? 1 : 0)
+                            .offset(y: appearStep > 0 ? 0 : 40)
+                            .animation(.easeOut(duration: 0.5), value: appearStep)
+                            .padding(.top, -15)
+                        Text("Spatial Bill of Lading")
+                            .font(.system(size: 28))
+                            .italic()
+                            .padding(.bottom, 60)
+                            .offset(z: 10)
+                            .opacity(appearStep > 1 ? 1 : 0)
+                            .offset(y: appearStep > 1 ? 0 : 40)
+                            .animation(.easeOut(duration: 0.5).delay(0.1), value: appearStep)
+                        Text("Introduzca ID del envío:")
+                            .font(.headline)
+                            .opacity(appearStep > 2 ? 1 : 0)
+                            .offset(y: appearStep > 2 ? 0 : 40)
+                            .animation(.easeOut(duration: 0.5).delay(0.2), value: appearStep)
+                        TextField("ID del envío", text: $shipmentID)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numberPad)
+                            .frame(maxWidth: 500)
+                            .padding()
+                            .onSubmit {
+                                fetchJSONFromAPI()
+                            }
+                            .opacity(appearStep > 3 ? 1 : 0)
+                            .offset(y: appearStep > 3 ? 0 : 40)
+                            .animation(.easeOut(duration: 0.5).delay(0.3), value: appearStep)
+                        if isAPILoading == false {
+                            Button("Cargar desde API") {
+                                fetchJSONFromAPI()
+                            }
+                            .frame(width: 360, height: 80)
+                            .font(.system(size: 24))
+                            .disabled(shipmentID.isEmpty)
+                            .padding(.bottom, -15)
+                            .opacity(appearStep > 4 ? 1 : 0)
+                            .offset(y: appearStep > 4 ? 0 : 40)
+                            .animation(.easeOut(duration: 0.5).delay(0.4), value: appearStep)
+                        } else {
+                            ProgressView()
+                                .padding()
+                                .opacity(appearStep > 4 ? 1 : 0)
+                                .animation(.easeOut(duration: 0.5).delay(0.4), value: appearStep)
                         }
-                    
-                    if isAPILoading == false {
-                        Button("Cargar desde API") {
-                            fetchJSONFromAPI()
+                        Button("Cargar último envío") {
+                            historyIndex = 0
+                            loadRecentJSONs()
+                            showHistory = true
+                            if sharedViewModel.recentJSONs.isEmpty {
+                                errorMessage = "No hay envíos recientes"
+                                return
+                            }
                         }
                         .frame(width: 360, height: 80)
                         .font(.system(size: 24))
-                        .disabled(shipmentID.isEmpty)
                         .padding(.bottom, -15)
-                    } else {
-                        ProgressView()
-                            .padding()
-                    }
-                    
-                    Button("Cargar último envío") {
-                        historyIndex = 0
-                        loadRecentJSONs()
-                        showHistory = true
-                        if sharedViewModel.recentJSONs.isEmpty {
-                            errorMessage = "No hay envíos recientes"
-                            return
+                        .opacity(appearStep > 5 ? 1 : 0)
+                        .offset(y: appearStep > 5 ? 0 : 40)
+                        .animation(.easeOut(duration: 0.5).delay(0.5), value: appearStep)
+                        Button("Cargar desde archivo") {
+                            showDocumentPicker = true
                         }
+                        .sheet(isPresented: $showDocumentPicker) {
+                            DocumentPickerView(jsonData: $jsonData)
+                        }
+                        .frame(width: 360, height: 80)
+                        .font(.system(size: 24))
+                        .padding(.bottom, 5)
+                        .opacity(appearStep > 6 ? 1 : 0)
+                        .offset(y: appearStep > 6 ? 0 : 40)
+                        .animation(.easeOut(duration: 0.5).delay(0.6), value: appearStep)
                     }
-                    .frame(width: 360, height: 80)
-                    .font(.system(size: 24))
-                    .padding(.bottom, -15)
-                    Button("Cargar desde archivo") {
-                        showDocumentPicker = true
-                    }
-                    .sheet(isPresented: $showDocumentPicker) {
-                        DocumentPickerView(jsonData: $jsonData)
-                    }
-                    .frame(width: 360, height: 80)
-                    .font(.system(size: 24))
-                    .padding(.bottom, 5)
                 }
                 
                 Button(action: {
@@ -185,7 +209,9 @@ struct ContentView: View {
                         .frame(width: 30, height: 30)
                 }
                 .frame(width: 30, height: 30)
-                
+                .opacity(appearStep > 7 ? 1 : 0)
+                .offset(y: appearStep > 7 ? 0 : 40)
+                .animation(.easeOut(duration: 0.5).delay(0.7), value: appearStep)
                 if let error = errorMessage {
                     Text(error)
                         .foregroundColor(.red)
@@ -215,7 +241,7 @@ struct ContentView: View {
                                 Button(action: {
                                     selectedBox.removeAll()
                                     currentContainerIndex-=1
-                                    model.secondaryVolumeIsShowing = false
+                                    model.secondaryWindowIsShowing = false
                                     loadAndRenderFromJSON() // Render container
                                     
                                 }) {
@@ -228,7 +254,7 @@ struct ContentView: View {
                                 Button(action: {
                                     selectedBox.removeAll()
                                     currentContainerIndex+=1
-                                    model.secondaryVolumeIsShowing = false
+                                    model.secondaryWindowIsShowing = false
                                     loadAndRenderFromJSON() // Render container
                                     
                                 }) {
@@ -238,9 +264,9 @@ struct ContentView: View {
                                 }.padding()
                                     .disabled(currentContainerIndex >= containerCount-1)
                             }
-                            Toggle("Mostrar contenedor", isOn: $model.secondaryVolumeIsShowing)
+                            Toggle("Mostrar contenedor", isOn: $model.secondaryWindowIsShowing)
                                 .toggleStyle(.button)
-                                .onChange(of: model.secondaryVolumeIsShowing) { _, isShowing in
+                                .onChange(of: model.secondaryWindowIsShowing) { _, isShowing in
                                     selectedBox.removeAll()
                                     loadAndRenderFromJSON()
                                     if isShowing {
@@ -302,6 +328,10 @@ struct ContentView: View {
                     }
                 }
             }
+        }.onAppear {
+            model.primaryWindowIsShowing = true
+        }.onDisappear {
+            model.primaryWindowIsShowing = false
         }
         .alert(isPresented: $showCredentialPrompt) {
             Alert(
@@ -341,6 +371,14 @@ struct ContentView: View {
             }
             .frame(width: 450, height: 250)
             .padding()
+        }
+        .onAppear {
+            appearStep = 0
+            for i in 1...9 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.08) {
+                    withAnimation { appearStep = i }
+                }
+            }
         }
     }
     
@@ -516,7 +554,7 @@ struct ContentView: View {
         currentContainerIndex = 0
         boxCount = 0
         volumeEfficiency = 0.0
-        model.secondaryVolumeIsShowing = false
+        model.secondaryWindowIsShowing = false
         showHistory = false
         sharedViewModel.recentJSONs = []
     }

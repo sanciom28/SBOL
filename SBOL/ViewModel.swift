@@ -10,5 +10,6 @@ import Foundation
 
 @Observable
 class ViewModel {
-    var secondaryVolumeIsShowing: Bool = false
+    var primaryWindowIsShowing: Bool = false
+    var secondaryWindowIsShowing: Bool = false
 }

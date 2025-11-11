@@ -16,7 +16,7 @@ struct SBOLApp: App {
     
     var body: some Scene {
         
-        WindowGroup {
+        WindowGroup (id: "ContentView") {
             ContentView()
                 .environment(model)
                 .environmentObject(containerVM)
@@ -30,10 +30,5 @@ struct SBOLApp: App {
         }
         .windowStyle(.volumetric)
 
-        WindowGroup (id: "SettingsView") {
-            SettingsView()
-                .environment(model)
-                .environmentObject(sharedViewModel)
-        }.defaultSize(CGSize(width: 600, height: 600))
     }
 }

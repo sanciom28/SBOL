@@ -10,6 +10,7 @@ import RealityKit
 
 struct ContainerView: View {
     
+    @Environment(ViewModel.self) var model
     @EnvironmentObject var containerViewModel: ContainerViewModel  // Access shared container data
     @State private var containerPosition: SIMD3<Float> = [0, -0.3, 0]
     @State private var angle: Angle = .degrees(0)
@@ -18,10 +19,17 @@ struct ContainerView: View {
     @AppStorage("scaleModifier") var scaleModifier: Int = 10000
     @AppStorage("rotationSpeed") var rotationSpeed: Double = 3.0
     
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
+    
     var body: some View {
-        if containerViewModel.rawJSON.isEmpty {
-            Text("Ningún contenedor seleccionado.")
-                .font(.largeTitle)
+        
+        @Bindable var model = model
+
+        if !model.primaryWindowIsShowing {
+            Button("Abrir ventana principal") {
+                openWindow(id: "ContentView")
+            }
         } else {
             ZStack(alignment: .bottom) {
                 RealityView { content in
