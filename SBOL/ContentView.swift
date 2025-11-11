@@ -18,7 +18,6 @@ struct ContentView: View {
     @State private var containerCount: Int = 0
     @State private var currentContainerIndex: Int = 0
     @State private var boxCount: Int = 0
-    @State private var boxData: [Int: BoxInfo] = [:]
     @State private var shipmentID: String = ""
     @State private var errorMessage: String?
     @State private var ajustes: Bool = false
