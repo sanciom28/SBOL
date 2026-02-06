@@ -99,14 +99,14 @@ struct ContentView: View {
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Button("Edit API credentials") {
+                    Button("   Edit API credentials   ") {
                         tempUsername = apiUsername
                         tempPassword = apiPassword
                         showCredentialSheet = true
                     }
                     .font(.system(size: 22))
                     .padding(.top, 20)
-                    Button("Restore defaults") {
+                    Button("      Restore defaults      ") {
                         scaleModifier = 10
                         maxStoredContainers = 20
                         rotationSpeed = 3.0
@@ -157,7 +157,7 @@ struct ContentView: View {
                             .offset(y: appearStep > 3 ? 0 : 40)
                             .animation(.easeOut(duration: 0.5).delay(0.3), value: appearStep)
                         if isAPILoading == false {
-                            Button("Load from API") {
+                            Button("  Fetch from API  ") {
                                 fetchJSONFromAPI()
                             }
                             .frame(width: 360, height: 80)
@@ -173,7 +173,7 @@ struct ContentView: View {
                                 .opacity(appearStep > 4 ? 1 : 0)
                                 .animation(.easeOut(duration: 0.5).delay(0.4), value: appearStep)
                         }
-                        Button("Load recent shipments") {
+                        Button("   Load recents   ") {
                             historyIndex = 0
                             loadRecentJSONs()
                             showHistory = true
@@ -188,7 +188,7 @@ struct ContentView: View {
                         .opacity(appearStep > 5 ? 1 : 0)
                         .offset(y: appearStep > 5 ? 0 : 40)
                         .animation(.easeOut(duration: 0.5).delay(0.5), value: appearStep)
-                        Button("Load from file") {
+                        Button("   Load from file   ") {
                             showDocumentPicker = true
                         }
                         .sheet(isPresented: $showDocumentPicker) {
@@ -266,7 +266,7 @@ struct ContentView: View {
                                 }.padding()
                                     .disabled(currentContainerIndex >= containerCount-1)
                             }
-                            Toggle("Show container", isOn: $model.secondaryWindowIsShowing)
+                            Toggle("  Show container  ", isOn: $model.secondaryWindowIsShowing)
                                 .toggleStyle(.button)
                                 .onChange(of: model.secondaryWindowIsShowing) { _, isShowing in
                                     selectedBox.removeAll()
@@ -285,7 +285,7 @@ struct ContentView: View {
                                     showHistory = true
                                     loadAndRenderFromJSON()
                                 }) {
-                                    Text("    Previous shipment    ")
+                                    Text("Previous shipment")
                                 }.disabled(historyIndex == 0)
                                 
                                 Button(action: {
@@ -295,7 +295,7 @@ struct ContentView: View {
                                     showHistory = true
                                     loadAndRenderFromJSON()
                                 }) {
-                                    Text("     Next shipment     ")
+                                    Text("    Next shipment    ")
                                 }.disabled(historyIndex >= sharedViewModel.recentJSONs.count-1)
                                     .padding()
                             }
@@ -339,7 +339,7 @@ struct ContentView: View {
             Alert(
                 title: Text("Credentials required"),
                 message: Text("Please enter your API username and password to continue."),
-                primaryButton: .default(Text("Aceptar"), action: {
+                primaryButton: .default(Text("Continue"), action: {
                     tempUsername = apiUsername
                     tempPassword = apiPassword
                     showCredentialSheet = true
