@@ -50,70 +50,70 @@ struct ContentView: View {
         VStack {
             if jsonData == nil {
                 if ajustes {
-                    Text("Configuración")
+                    Text("Settings")
                         .font(.largeTitle)
                         .bold()
                         .padding(.bottom, 40)
-                    Text("Escala del contenedor")
+                    Text("Container scale")
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
                         set: { scaleModifier = Int($0) }
                     ), in: 5...15, step: 1)
                     .frame(width: 500)
                     if scaleModifier == 100 {
-                        Text("Tamaño real")
+                        Text("Actual size")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
-                        Text("\(scaleModifier)% del tamaño real")
+                        Text("\(scaleModifier)% of actual size")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Text("Velocidad de rotación de contenedor")
+                    Text("Container rotation speed")
                     Slider(value: Binding(
                         get: { Double(rotationSpeed) },
                         set: { rotationSpeed = Double($0) }
                     ), in: 0...10, step: 1)
                     .frame(width: 500)
                     if rotationSpeed == 0 {
-                        Text("Rotación desactivada")
+                        Text("Rotation disabled")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
-                        Text("\(Int(rotationSpeed)) rotaciones por minuto")
+                        Text("\(Int(rotationSpeed)) rotations per minute")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Text("Cantidad de envíos guardados en historial")
+                    Text("Amount of stored shipments")
                     Slider(value: Binding(
                         get: { Double(maxStoredContainers) },
                         set: { maxStoredContainers = Int($0) }
                     ), in: 1...100, step: 1)
                     .frame(width: 500)
                     if maxStoredContainers == 1 {
-                        Text("1 envío")
+                        Text("1 shipment")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     } else {
-                        Text("\(maxStoredContainers) envíos")
+                        Text("\(maxStoredContainers) shipments")
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Button("Editar credenciales de API") {
+                    Button("Edit API credentials") {
                         tempUsername = apiUsername
                         tempPassword = apiPassword
                         showCredentialSheet = true
                     }
                     .font(.system(size: 22))
                     .padding(.top, 20)
-                    Button("Restaurar valores por defecto") {
+                    Button("Restore defaults") {
                         scaleModifier = 10
                         maxStoredContainers = 20
                         rotationSpeed = 3.0
                     }
                     .font(.system(size: 22))
                     .padding(.top, 12)
-                    Button("Borrar historial de envío") {
+                    Button("Clear shipment history") {
                         deleteRecentJSONs()
                     }
                     .font(.system(size: 22))
@@ -140,12 +140,12 @@ struct ContentView: View {
                             .opacity(appearStep > 1 ? 1 : 0)
                             .offset(y: appearStep > 1 ? 0 : 40)
                             .animation(.easeOut(duration: 0.5).delay(0.1), value: appearStep)
-                        Text("Introduzca ID del envío:")
+                        Text("Enter shipment ID:")
                             .font(.headline)
                             .opacity(appearStep > 2 ? 1 : 0)
                             .offset(y: appearStep > 2 ? 0 : 40)
                             .animation(.easeOut(duration: 0.5).delay(0.2), value: appearStep)
-                        TextField("ID del envío", text: $shipmentID)
+                        TextField("Shipment ID", text: $shipmentID)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .keyboardType(.numberPad)
                             .frame(maxWidth: 500)
@@ -157,7 +157,7 @@ struct ContentView: View {
                             .offset(y: appearStep > 3 ? 0 : 40)
                             .animation(.easeOut(duration: 0.5).delay(0.3), value: appearStep)
                         if isAPILoading == false {
-                            Button("Cargar desde API") {
+                            Button("Load from API") {
                                 fetchJSONFromAPI()
                             }
                             .frame(width: 360, height: 80)
@@ -173,7 +173,7 @@ struct ContentView: View {
                                 .opacity(appearStep > 4 ? 1 : 0)
                                 .animation(.easeOut(duration: 0.5).delay(0.4), value: appearStep)
                         }
-                        Button("Cargar último envío") {
+                        Button("Load recent shipments") {
                             historyIndex = 0
                             loadRecentJSONs()
                             showHistory = true
@@ -188,7 +188,7 @@ struct ContentView: View {
                         .opacity(appearStep > 5 ? 1 : 0)
                         .offset(y: appearStep > 5 ? 0 : 40)
                         .animation(.easeOut(duration: 0.5).delay(0.5), value: appearStep)
-                        Button("Cargar desde archivo") {
+                        Button("Load from file") {
                             showDocumentPicker = true
                         }
                         .sheet(isPresented: $showDocumentPicker) {
@@ -224,19 +224,19 @@ struct ContentView: View {
                 ZStack {
                     HStack(alignment: .top) {
                         VStack(spacing: 4) {
-                            Text("Detalles del envío")
+                            Text("Shipment details")
                                 .font(.title)
                                 .bold()
                                 .padding()
                             
                             VStack(alignment: .leading) {
                                 if shipmentID != "" {
-                                    Text("ID del Envío: \(shipmentID)")
+                                    Text("Shipment ID: \(shipmentID)")
                                 }
-                                Text("Num. total de contenedores: \(containerCount)")
-                                Text("Contenedor actual: \(currentContainerIndex + 1) / \(containerCount)")
-                                Text("Num. total de cajas: \(boxCount)")
-                                Text("Eficiencia de llenado: \(String(format: "%.2f", volumeEfficiency))%")
+                                Text("Total containers: \(containerCount)")
+                                Text("Current container: \(currentContainerIndex + 1) / \(containerCount)")
+                                Text("Total boxes: \(boxCount)")
+                                Text("Load efficiency: \(String(format: "%.2f", volumeEfficiency))%")
                                     .padding(.bottom, 10)
                             }
                             HStack {
@@ -266,7 +266,7 @@ struct ContentView: View {
                                 }.padding()
                                     .disabled(currentContainerIndex >= containerCount-1)
                             }
-                            Toggle("Mostrar contenedor", isOn: $model.secondaryWindowIsShowing)
+                            Toggle("Show container", isOn: $model.secondaryWindowIsShowing)
                                 .toggleStyle(.button)
                                 .onChange(of: model.secondaryWindowIsShowing) { _, isShowing in
                                     selectedBox.removeAll()
@@ -285,7 +285,7 @@ struct ContentView: View {
                                     showHistory = true
                                     loadAndRenderFromJSON()
                                 }) {
-                                    Text("     Anterior envío     ")
+                                    Text("    Previous shipment    ")
                                 }.disabled(historyIndex == 0)
                                 
                                 Button(action: {
@@ -295,12 +295,12 @@ struct ContentView: View {
                                     showHistory = true
                                     loadAndRenderFromJSON()
                                 }) {
-                                    Text("    Siguiente envío    ")
+                                    Text("     Next shipment     ")
                                 }.disabled(historyIndex >= sharedViewModel.recentJSONs.count-1)
                                     .padding()
                             }
                             Spacer()
-                            Button(" Volver ") {
+                            Button(" Return ") {
                                 resetView()
                             }.padding()
                         }.padding()
@@ -310,8 +310,8 @@ struct ContentView: View {
                         Table(realBoxInfo, selection: $selectedBox) {
                             TableColumn("ID", value: \.id)
                                 .width(160)
-                            TableColumn("Nombre", value: \.name)
-                            TableColumn("Cantidad", value: \.count)
+                            TableColumn("Name", value: \.name)
+                            TableColumn("Count", value: \.count)
                                 .width(130)
                                 .alignment(.trailing)
                         }.padding()
@@ -337,8 +337,8 @@ struct ContentView: View {
         }
         .alert(isPresented: $showCredentialPrompt) {
             Alert(
-                title: Text("Credenciales requeridas"),
-                message: Text("Por favor, introduzca su nombre de usuario y contraseña para continuar."),
+                title: Text("Credentials required"),
+                message: Text("Please enter your API username and password to continue."),
                 primaryButton: .default(Text("Aceptar"), action: {
                     tempUsername = apiUsername
                     tempPassword = apiPassword
@@ -349,21 +349,21 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showCredentialSheet) {
             VStack(spacing: 20) {
-                Text("Editar credenciales de API")
+                Text("Edit API credentials")
                     .font(.title2)
-                TextField("Usuario", text: $tempUsername)
+                TextField("Username", text: $tempUsername)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 400)
-                SecureField("Contraseña", text: $tempPassword)
+                SecureField("Password", text: $tempPassword)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 400)
                     .padding(.bottom, 10)
                 HStack {
-                    Button("Cancelar") {
+                    Button("Cancel") {
                         showCredentialSheet = false
                     }
                     .padding(.horizontal, 16)
-                    Button("Guardar") {
+                    Button("Save") {
                         apiUsername = tempUsername
                         apiPassword = tempPassword
                         showCredentialSheet = false
@@ -429,7 +429,7 @@ struct ContentView: View {
                 
             }
         } catch {
-            errorMessage = "Error cargando JSON: \(error.localizedDescription)"
+            errorMessage = "Error loading JSON: \(error.localizedDescription)"
         }
     }
     
@@ -442,7 +442,7 @@ struct ContentView: View {
             return
         }
         guard let shipmentNumber = Int(shipmentID) else {
-            errorMessage = "ID de envío inválido"
+            errorMessage = "Invalid shipment ID"
             isAPILoading = false
             return
         }
@@ -455,13 +455,13 @@ struct ContentView: View {
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody),
               let jsonString = String(data: jsonData, encoding: .utf8)?
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            DispatchQueue.main.async { errorMessage = "Error al codificar la solicitud JSON"; isAPILoading = false }
+            DispatchQueue.main.async { errorMessage = "JSON encoding request error"; isAPILoading = false }
             return
         }
         
         let urlString = baseURL + jsonString
         guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async { errorMessage = "URL del API inválido"; isAPILoading = false }
+            DispatchQueue.main.async { errorMessage = "Invalid API URL"; isAPILoading = false }
             return
         }
         
@@ -473,19 +473,19 @@ struct ContentView: View {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    errorMessage = "Fallo en solicitud: \(error.localizedDescription)"
+                    errorMessage = "Request error: \(error.localizedDescription)"
                     isAPILoading = false
                     return
                 }
                 guard let data = data else {
-                    errorMessage = "No se recibieron datos"
+                    errorMessage = "Error receiving data"
                     isAPILoading = false
                     return
                 }
                 do {
                     let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     if jsonObject!["errormessage"] != nil || jsonObject?["waybill"] as! Int == 0 {
-                        errorMessage = "Envío no encontrado"
+                        errorMessage = "Shipment not found"
                         isAPILoading = false
                         return
                     }
@@ -521,7 +521,6 @@ struct ContentView: View {
         resetView()
         if let jsonStrings = UserDefaults.standard.array(forKey: "RecentJSONs") as? [String] {
             sharedViewModel.recentJSONs = jsonStrings.compactMap { $0.data(using: .utf8) }
-            print("Historial: \(sharedViewModel.recentJSONs.count)")
             if 0 <= historyIndex && historyIndex < sharedViewModel.recentJSONs.count {
                 jsonData = sharedViewModel.recentJSONs.reversed()[historyIndex]
             }

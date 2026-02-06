@@ -27,7 +27,7 @@ struct ContainerView: View {
         @Bindable var model = model
 
         if !model.primaryWindowIsShowing {
-            Button("Abrir ventana principal") {
+            Button("Open main window") {
                 openWindow(id: "ContentView")
             }
         } else {
