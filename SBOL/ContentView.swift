@@ -53,7 +53,7 @@ struct ContentView: View {
                     Text("Settings")
                         .font(.largeTitle)
                         .bold()
-                        .padding(.bottom, 40)
+                        .padding(.bottom, 20)
                     Text("Container scale")
                     Slider(value: Binding(
                         get: { Double(scaleModifier) },
@@ -84,7 +84,7 @@ struct ContentView: View {
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Text("Amount of stored shipments")
+                    Text("Stored shipments in memory")
                     Slider(value: Binding(
                         get: { Double(maxStoredContainers) },
                         set: { maxStoredContainers = Int($0) }
@@ -99,25 +99,29 @@ struct ContentView: View {
                             .font(.system(size: 14))
                             .padding(.bottom, 20)
                     }
-                    Button("   Edit API credentials   ") {
+                    Button("Download test shipment") {
+                        downloadTestShipment()
+                    }
+                    .font(.system(size: 22))
+                    Button("    Edit API credentials    ") {
                         tempUsername = apiUsername
                         tempPassword = apiPassword
                         showCredentialSheet = true
                     }
                     .font(.system(size: 22))
-                    .padding(.top, 20)
-                    Button("      Restore defaults      ") {
+                    .padding(.top, 10)
+                    Button("       Restore defaults       ") {
                         scaleModifier = 10
                         maxStoredContainers = 20
                         rotationSpeed = 3.0
                     }
                     .font(.system(size: 22))
-                    .padding(.top, 12)
-                    Button("Clear shipment history") {
+                    .padding(.top, 10)
+                    Button(" Clear shipment history ") {
                         deleteRecentJSONs()
                     }
                     .font(.system(size: 22))
-                    .padding(12)
+                    .padding(10)
                 } else {
                     Group {
                         Text("SBOL")
@@ -224,7 +228,7 @@ struct ContentView: View {
                 ZStack {
                     HStack(alignment: .top) {
                         VStack(spacing: 4) {
-                            Text("Shipment details")
+                            Text("Shipment Details")
                                 .font(.title)
                                 .bold()
                                 .padding()
@@ -501,6 +505,34 @@ struct ContentView: View {
                 addToRecentJSONs(data)
             }
         }.resume()
+    }
+    
+    func downloadTestShipment() {
+        let filename = "TestShipment"
+        let fileExt = "json"
+        let fm = FileManager.default
+        guard let docsURL = fm.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            errorMessage = "Unable to access Documents directory"
+            return
+        }
+        let destURL = docsURL.appendingPathComponent(filename + "." + fileExt)
+
+        if fm.fileExists(atPath: destURL.path) {
+            //errorMessage = "Sample already exists in Documents/\(destURL.lastPathComponent)"
+            return
+        }
+
+        guard let bundleURL = Bundle.main.url(forResource: filename, withExtension: fileExt) else {
+            errorMessage = "Sample file not bundled with the app. Please add TestShipment.json to the app bundle."
+            return
+        }
+
+        do {
+            try fm.copyItem(at: bundleURL, to: destURL)
+            //errorMessage = "Sample downloaded to Documents/\(destURL.lastPathComponent)"
+        } catch {
+            errorMessage = "Failed to copy sample file: \(error.localizedDescription)"
+        }
     }
     
     func addToRecentJSONs(_ json: Data) {
